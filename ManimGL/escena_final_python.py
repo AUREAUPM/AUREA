@@ -231,12 +231,68 @@ class DistribucionDados(VGroup):
                 flecha.move_to([x, h + 0.05 + j * 0.07, 0]) # Mueve la flecha a la posición correcta, apilándolas verticalmente con una separación de 0.07 unidades entre ellas
                 self.add(flecha) # Agregar la flecha al grupo de la distribución de dados
 
+# Clase para representar un slider interactivo que permite seleccionar el número de experimentos a realizar
+class Slider(VGroup):
+    def __init__(self, valores, width=3.2, label="Experimentos"):
+        super().__init__()
+        self.valores = valores # Lista de valores posibles para el slider (entre 10 y 800 en incrementos de 50)
+        self.index = len(valores) - 1 # Índice del valor seleccionado actualmente (inicialmente el último valor de la lista)
+        self.linea = Line(LEFT * width / 2, RIGHT * width / 2,stroke_width=3) # Línea que representa el slider
+        self.punto = Dot(radius=0.08, color=YELLOW) # Punto que indica la posición actual del slider
+        self.punto.move_to(self.linea.get_end()) # Mueve el punto al final de la línea (valor máximo del slider)
+        # Crea el texto que muestra el valor seleccionado actualmente en el slider
+        self.texto = Text(
+            f"{label}: {self.valores[self.index]}",
+            font_size=22
+        )
+        self.texto.next_to(self.linea, UP, buff=0.18) # Posiciona el texto encima de la línea del slider con un pequeño espacio 
+        self.add(self.linea, self.punto, self.texto) # Agrega la línea, el punto y el texto al grupo del slider
+
+    # Mueve el punto del slider a una posición específica
+    def mover_a(self, x):
+        xmin = self.linea.get_start()[0] # Coordenada 'x' mínima de la línea del slider
+        xmax = self.linea.get_end()[0] # Coordenada 'x' máxima de la línea del slider
+        x = np.clip(x, xmin, xmax) # Limita la posición 'x' del punto para que no se salga de los límites de la línea del slider
+        posiciones = np.linspace(xmin, xmax, len(self.valores)) # Calcula las posiciones 'x' correspondientes a cada valor del slider
+        self.index = np.argmin(np.abs(posiciones - x)) # Encuentra el índice del valor más cercano a la posición 'x' del punto del slider
+        # Mueve el punto del slider a la posición correspondiente al valor seleccionado
+        self.punto.move_to([
+            posiciones[self.index],
+            self.linea.get_center()[1],
+            0
+        ])
+        # Actualiza el texto que muestra el valor seleccionado actualmente en el slider
+        nuevo = Text(
+            f"Experimentos: {self.valores[self.index]}",
+            font_size=22
+        )
+        nuevo.next_to(self.linea, UP, buff=0.18) # Posiciona el nuevo texto encima de la línea del slider con un pequeño espacio
+        self.texto.become(nuevo) # Actualiza el texto del slider con el nuevo texto creado
+
+    # Devuelve el valor seleccionado actualmente en el slider
+    def valor(self):
+        return self.valores[self.index]
+
 
 # Escena principal que muestra la simulación de tirar 10 dados, el histograma de las sumas y la distribución de probabilidades
-class EscenaDados(Scene):
+class EscenaDados(InteractiveScene):
+    # Maneja el evento de presionar el mouse para iniciar el arrastre del slider
+    def on_mouse_press(self, point, button, mods):
+        if hasattr(self, "slider"):
+            if np.linalg.norm(point - self.slider.punto.get_center()) < 0.25:
+                self.arrastrando = True
+    # Maneja el evento de soltar el mouse después de arrastrar el slider
+    def on_mouse_release(self, point, button, mods):
+        if self.arrastrando:
+            self.arrastrando = False
+            self.n_experimentos = self.slider.valor()
+            self.empezar = True
+    # Maneja el evento de arrastrar el mouse para mover el punto del slider
+    def on_mouse_drag(self, point, d_point, buttons, mods):
+        if getattr(self, "arrastrando", False):
+            self.slider.mover_a(point[0])
+    # Método principal que construye la escena
     def construct(self):
-        tiradas = np.random.randint(1, 7, size=(n_experimentos, n_dados)) # Genera una matriz de tiradas de dados con valores entre 1 y 6, con dimensiones (n_experimentos, n_dados)
-        sumas = tiradas.sum(axis=1) # Calcula la suma de cada tirada de dados
         textos_suma_cache = {} # Diccionario para almacenar los objetos de texto de las sumas
         # Renderiza el texto de cada suma una sola vez y los guarda para evitar renderizarlos cada vez que salgan
         for s in range(10, 61):
@@ -250,6 +306,24 @@ class EscenaDados(Scene):
         distribucion.scale(1.3) 
         distribucion.to_corner(UL)
         distribucion.shift(LEFT*0.15 + DOWN*0.02)
+        self.add(histograma, distribucion)
+
+        self.empezar = False # Variable que indica si se ha presionado el botón de inicio para comenzar la simulación
+        self.n_experimentos = 800 # Número de experimentos inicial (valor máximo del slider)
+        valores = [10] + list(range(50, 801, 50)) # Lista de valores posibles para el slider (entre 10 y 800 en incrementos de 50)
+        slider = Slider(valores) # Crea el slider interactivo para seleccionar el número de experimentos
+        slider.scale(0.8) # Escala el slider para que tenga un tamaño adecuado en la escena
+        slider.next_to(distribucion, DOWN, buff=0.6) # Posiciona el slider debajo de la distribución de dados con un pequeño espacio
+        self.slider = slider # Guarda el slider en la escena para poder acceder a él en los eventos de mouse 
+        self.arrastrando = False # Variable que indica si se está arrastrando el punto del slider
+        self.add(slider) # Agrega el slider a la escena
+        # Espera hasta que se presione el botón de inicio (se arrastre el slider y se suelte) para comenzar la simulación
+        while not self.empezar:
+            self.wait(1 / 60)
+        self.remove(slider) # Quita el slider de la escena una vez que se ha presionado el botón de inicio
+        n_experimentos = self.n_experimentos # Actualiza el número de experimentos a realizar según el valor seleccionado en el slider
+        tiradas = np.random.randint(1, 7, size=(n_experimentos, n_dados)) # Genera un array de tiradas de dados aleatorias con valores entre 1 y 6, con dimensiones (n_experimentos, n_dados)
+        sumas = tiradas.sum(axis=1) # Calcula la suma de cada tirada de dados a lo largo del eje 1 (filas) para obtener un array de sumas de tamaño (n_experimentos,)
 
         ## CURVA DE LA NORMAL TEÓRICA
         mu = n_dados * 3.5 # Media de la distribución  (número de dados * valor medio de cada dado)
