@@ -162,7 +162,7 @@ class DistribucionDados(VGroup):
         color_flecha = "#ffe45c" # Color de las flechas que indican la cantidad de veces que ha salido cada suma
         ancho_total  = 3.5 # Ancho total de la representación de la distribución de dados
         base_y       = 0 # Coordenada 'y' de la base de la representación de la distribución de dados
-        altura_max   = 0.9 # Altura máxima de la representación de la distribución de dados (en unidades de Manim)
+        altura_max   = 1.2 # Altura máxima de la representación de la distribución de dados (en unidades de Manim)
         probabilidad = 1/6 # Probabilidad de que salga cada suma (1/6 para cada suma de 10 dados)
 
         # Crear los ejes de la representación de la distribución de dados
@@ -182,10 +182,10 @@ class DistribucionDados(VGroup):
         self.add(eje_x, eje_y)
 
         # Crear las marcas y números en el eje vertical
-        valores_y = [(0,    "0.00"), (0.25, "0.25"), (0.50, "0.50")] # Valores y etiquetas para las marcas en el eje vertical (probabilidades 0.00, 0.25 y 0.50)
+        valores_y = [(0,    "0.00"), (0.25, "0.25"), (0.50, "0.50"), (0.75, "0.75"), (1.00, "1.00")] # Valores y etiquetas para las marcas en el eje vertical (probabilidades 0.00, 0.25, 0.50, 0.75 y 1.00)
         # Agregar las marcas y números al eje vertical
         for valor, texto in valores_y:
-            y = valor 
+            y = valor * altura_max # Calcula la posición 'y' de la marca correspondiente a la probabilidad
             tick = Line(
                 [-0.045, y, 0], 
                 [ 0.045, y, 0],
@@ -204,7 +204,7 @@ class DistribucionDados(VGroup):
         # Crear las barras, dados y flechas para cada suma de dados (de 1 a 6)
         for i in range(6):
             x = 0.42 + i * 0.56 # Posición 'x' de cada barra, dado y flechas para las sumas de dados
-            h = probabilidad # Altura de cada barra, proporcional a la probabilidad
+            h = probabilidad * altura_max # Altura de cada barra, proporcional a la probabilidad
            
             barra = Rectangle(width=0.48, height=h) # Crear la barra para la suma de dados correspondiente
             barra.set_fill(color_barra, opacity=0.9) # Color de las barras
@@ -228,7 +228,7 @@ class DistribucionDados(VGroup):
                     color=color_flecha # Color 
                 )
                 flecha.scale(0.11) # Escala la flecha para que tenga un tamaño adecuado para la representación
-                flecha.move_to([x, h + 0.05 + j * 0.07, 0]) # Mueve la flecha a la posición correcta, apilándolas verticalmente con una separación de 0.07 unidades entre ellas
+                flecha.move_to([x, h + 0.06 + j * 0.08, 0]) # Mueve la flecha a la posición correcta, apilándolas verticalmente con una separación de 0.07 unidades entre ellas
                 self.add(flecha) # Agregar la flecha al grupo de la distribución de dados
 
 # Clase para representar un slider interactivo que permite seleccionar el número de experimentos a realizar
