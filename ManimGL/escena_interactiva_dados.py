@@ -9,8 +9,8 @@ from collections import defaultdict
 # Número de dados
 n_dados = 10
 # Número de experimentos 
-n_experimentos = 800
-# Cada cuántos experimentos renderizar un frame (800 experimentos y salto de 5 → 160 frames animados)
+n_experimentos = 2000
+# Cada cuántos experimentos renderizar un frame (2000 experimentos y salto de 5 → 400 frames animados)
 salto_animacion = 5
 # Duración de cada frame animado (en segundos)
 run_time_animacion = 0.07
@@ -32,7 +32,6 @@ class Dado(VGroup):
             fill_color="#1f1f1f",
             fill_opacity=1
         )
-         
         # Distancia desde el centro del dado para colocar los puntos (ajustada para que se vea bien)
         s = size * 0.24
         # Define las posiciones de los puntos para cada valor del dado
@@ -44,7 +43,6 @@ class Dado(VGroup):
             5: [(-s, -s), (-s, s), (0, 0), (s, -s), (s, s)],
             6: [(-s, -s), (-s, 0), (-s, s), (s, -s), (s, 0), (s, s)]
         }
-        
         # Crea los puntos del dado según el valor dado
         puntos = VGroup(*[
             Dot(
@@ -54,7 +52,6 @@ class Dado(VGroup):
             )
             for x, y in posiciones[valor]
         ])
-        
         # Agrega el cuadrado del dado y los puntos al grupo del dado
         self.add(borde, puntos)
 
@@ -63,30 +60,28 @@ class Dado(VGroup):
 class Histograma(VGroup):
     def __init__(self, n_dados, n_experimentos):
         super().__init__()
-
         # Configuracion de las caracteristicas de la escena
         self.x_min       = n_dados # Valor mínimo de la suma de los dados (10 para 10 dados)
         self.x_max       = 6 * n_dados # Valor máximo de la suma de los dados (60 para 10 dados)
         self.n_barras = self.x_max - self.x_min + 1
         self.base_y      = -3.1 # Coordenada 'y' de la base del histograma
+        # Calcula el ancho total del histograma según el número de dados para que se vea proporcionado
         if n_dados == 5:
             self.ancho_total = 6.2
         elif n_dados == 10:
             self.ancho_total = 9.5
         else:  # 20 dados
             self.ancho_total = 12.5
-        max_experimentos = 800
+        max_experimentos = 2000 # Número máximo de experimentos para calcular la altura de los bloques del histograma
         self.altura_bloque  = altura_objetivo / (0.06 * max_experimentos) # Altura de cada bloque del histograma, calculada para que el histograma alcance la altura objetivo
         self.ancho_bloque   = self.ancho_total / self.n_barras * 0.82 # Ancho de cada bloque del histograma
         self.separacion     = self.ancho_total / self.n_barras * 0.18 # Separación entre bloques del histograma
         self.color_hist     = "#7bc96f" # Color de los bloques del histograma
         self.color_activo   = "#d9a066" # Color del bloque activo 
         self.color_eje      = "#d8d8d8" # Color del eje
-
         # Diccionario para almacenar los bloques del histograma por cada suma de dados
         self.bloques_por_bin = defaultdict(list) 
         self.ultimo_activo   = None
-
         # Crear el eje horizontal del histograma
         eje = Line(
             [-self.ancho_total/2, self.base_y, 0], # Punto inicial del eje (izquierda)
@@ -95,7 +90,6 @@ class Histograma(VGroup):
             stroke_width=1.6 # Grosor del eje
         )
         self.add(eje) # Agregar el eje al grupo del histograma
-
         # Crear las marcas y números en el eje horizontal
         for k in range(self.x_min, self.x_max + 1): 
             x = np.interp(
@@ -121,7 +115,6 @@ class Histograma(VGroup):
                 numero.move_to([x, self.base_y - 0.22, 0])
                 self.add(numero) # Agregar los números al grupo del histograma
 
-   
     # Añade un bloque al histograma para la suma dada, actualizando el bloque activo y su color
     def añadir_bloque(self, suma):
         # Cambia el color del bloque que estaba activo anteriormente al color base del histograma
@@ -149,11 +142,9 @@ class Histograma(VGroup):
         bloque.set_fill(self.color_activo, opacity=1) # Color del bloque activo
         bloque.set_stroke(width=0) # Sin borde para los bloques del histograma
         bloque.move_to([x, y, 0]) # Mueve el bloque a la posición calculada
-
         self.bloques_por_bin[suma].append(bloque) # Guarda el bloque en el diccionario de bloques por suma
         self.ultimo_activo = bloque # Actualiza el bloque activo actual al nuevo bloque
         self.add(bloque) # Agrega el nuevo bloque al grupo del histograma
-
         # Devuelve el bloque creado para que pueda ser animado en la escena
         return bloque
 
@@ -162,7 +153,6 @@ class Histograma(VGroup):
 class DistribucionDados(VGroup):
     def __init__(self, conteos):
         super().__init__()
-
         # Configuración de colores y dimensiones para la representación de la distribución de dados
         color_eje    = "#d8d8d8" # Color del eje
         color_barra  = "#2d9cdb" # Color de las barras 
@@ -171,7 +161,6 @@ class DistribucionDados(VGroup):
         base_y       = 0 # Coordenada 'y' de la base de la representación de la distribución de dados
         altura_max   = 1.2 # Altura máxima de la representación de la distribución de dados (en unidades de Manim)
         probabilidad = 1/6 # Probabilidad de que salga cada suma (1/6 para cada suma de 10 dados)
-
         # Crear los ejes de la representación de la distribución de dados
         eje_x = Line(
             [0, base_y, 0], # Punto inicial del eje (izquierda)
@@ -187,7 +176,6 @@ class DistribucionDados(VGroup):
         )
         # Agregar los ejes al grupo de la distribución de dados
         self.add(eje_x, eje_y)
-
         # Crear las marcas y números en el eje vertical
         valores_y = [(0,    "0.00"), (0.25, "0.25"), (0.50, "0.50"), (0.75, "0.75"), (1.00, "1.00")] # Valores y etiquetas para las marcas en el eje vertical (probabilidades 0.00, 0.25, 0.50, 0.75 y 1.00)
         # Agregar las marcas y números al eje vertical
@@ -207,22 +195,18 @@ class DistribucionDados(VGroup):
             # Colocar los números a la izquierda de las marcas del eje vertical con un pequeño espacio
             numero.next_to(tick, LEFT, buff=0.04)
             self.add(tick, numero) # Agregar los ticks y números al grupo de la distribución de dados
-
         # Crear las barras, dados y flechas para cada suma de dados (de 1 a 6)
         for i in range(6):
             x = 0.42 + i * 0.56 # Posición 'x' de cada barra, dado y flechas para las sumas de dados
             h = probabilidad * altura_max # Altura de cada barra, proporcional a la probabilidad
-           
             barra = Rectangle(width=0.48, height=h) # Crear la barra para la suma de dados correspondiente
             barra.set_fill(color_barra, opacity=0.9) # Color de las barras
             barra.set_stroke(width=0) 
             barra.move_to([x, base_y + h/2, 0]) # Mueve la barra a la posición correcta
             self.add(barra) # Agrega la barra al grupo de la distribución de dados
-
             dado = Dado(valor=i+1, size=0.24) # Crea un dado haciendo referencia al Vgroup `Dado` 
             dado.move_to([x, -0.30, 0]) # Mueve el dado a una posición debajo de la barra correspondiente
             self.add(dado) # Agrega el dado al grupo de la distribución de dados
-
             cantidad = conteos[i] # Cantidad de veces que ha salido el dado
             # Para cada vez que ha salido el dado, crear una flecha y apilarlas verticalmente con una separación de 0.07 unidades entre ellas
             for j in range(cantidad):
@@ -237,6 +221,7 @@ class DistribucionDados(VGroup):
                 flecha.scale(0.11) # Escala la flecha para que tenga un tamaño adecuado para la representación
                 flecha.move_to([x, h + 0.06 + j * 0.08, 0]) # Mueve la flecha a la posición correcta, apilándolas verticalmente con una separación de 0.07 unidades entre ellas
                 self.add(flecha) # Agregar la flecha al grupo de la distribución de dados
+
 
 # Clase para representar un slider interactivo que permite seleccionar el número de experimentos a realizar
 class Slider(VGroup):
@@ -283,15 +268,20 @@ class Slider(VGroup):
     
     
 
-
 # Escena principal que muestra la simulación de tirar 10 dados, el histograma de las sumas y la distribución de probabilidades
 class EscenaDados(InteractiveScene):
     # Maneja el evento de presionar el mouse para iniciar el arrastre del slider
     def on_mouse_press(self, point, button, mods):
+        # Verifica si el punto del mouse está cerca del punto del slider o del slider de dados para iniciar el arrastre
         if np.linalg.norm(point - self.slider.punto.get_center()) < 0.25:
             self.arrastrando = self.slider
+        # Verifica si el punto del mouse está cerca del punto del slider de dados para iniciar el arrastre
         elif np.linalg.norm(point - self.slider_dados.punto.get_center()) < 0.25:
             self.arrastrando = self.slider_dados
+        # Verifica si el punto del mouse está dentro del área del botón de inicio para comenzar la simulación
+        elif self.play_button.get_bounding_box()[0][0] <= point[0] <= self.play_button.get_bounding_box()[2][0] \
+            and self.play_button.get_bounding_box()[0][1] <= point[1] <= self.play_button.get_bounding_box()[2][1]:
+            self.empezar = True
     # Maneja el evento de soltar el mouse después de arrastrar el slider
     def on_mouse_release(self, point, button, mods):
         self.arrastrando = None
@@ -299,99 +289,71 @@ class EscenaDados(InteractiveScene):
     def on_mouse_drag(self, point, d_point, buttons, mods):
         if self.arrastrando is not None:
             self.arrastrando.mover_a(point[0])
-    def on_key_press(self, symbol, modifiers):
-        if symbol == 65293:   # Enter
-            self.empezar = True
     # Método principal que construye la escena
     def construct(self):
-
-
-        
         # Representación inicial de la distribución de dados con conteos iniciales de 0 para cada suma escalado y posicionado en la esquina superior izquierda
         distribucion = DistribucionDados([0] * 6)
         distribucion.scale(1.3) 
         distribucion.to_corner(UL)
         distribucion.shift(LEFT*0.15 + DOWN*0.02)
-        
-
         self.empezar = False # Variable que indica si se ha presionado el botón de inicio para comenzar la simulación
-        self.n_experimentos = 800 # Número de experimentos inicial (valor máximo del slider)
-        valores = [10] + list(range(50, 801, 50)) # Lista de valores posibles para el slider (entre 10 y 800 en incrementos de 50)
+        self.n_experimentos = 2000 # Número de experimentos inicial (valor máximo del slider)
+        valores = [10] + list(range(100, 2001, 100)) # Lista de valores posibles para el slider (entre 10 y 2000 en incrementos de 100)
         slider = Slider(valores) # Crea el slider interactivo para seleccionar el número de experimentos
         slider.scale(0.8) # Escala el slider para que tenga un tamaño adecuado en la escena
         slider.next_to(distribucion, DOWN, buff=0.6) # Posiciona el slider debajo de la distribución de dados con un pequeño espacio
         self.slider = slider # Guarda el slider en la escena para poder acceder a él en los eventos de mouse 
         self.arrastrando = None # Variable que indica si se está arrastrando el punto del slider
         self.add(slider) # Agrega el slider a la escena
-
+        # Crea un segundo slider para seleccionar el número de dados a lanzar (5, 10 o 20)
         valores_dados = [5, 10, 20]
         slider_dados = Slider(
             valores_dados,
             width=2.0,
             label="Dados"
         )
-        slider_dados.scale(0.8)
-        slider_dados.move_to([4.9, 2.15, 0])
-        self.add(slider_dados)
-        self.slider_dados = slider_dados
+        slider_dados.scale(0.8) # Escala el slider de dados para que tenga un tamaño adecuado en la escena
+        slider_dados.move_to([4.9, 2.15, 0]) # Posiciona el slider de dados en la esquina superior derecha de la escena
+        self.add(slider_dados) # Agrega el slider de dados a la escena
+        self.slider_dados = slider_dados # Guarda el slider de dados en la escena para poder acceder a él en los eventos de mouse
+        
+        play_rect = Rectangle(width=2.0, height=0.8) # Crea un rectángulo que representa el botón de inicio (PLAY)
+        play_rect.set_fill(GREEN, opacity=0.9) # Color de relleno del botón
+        play_rect.set_stroke(WHITE, width=2) # Color del borde del botón
+        play_text = Text("PLAY").scale(0.55) # Crea el texto "PLAY" que se mostrará en el botón
+        play = VGroup(play_rect, play_text) # Agrupa el rectángulo y el texto en un solo objeto para representar el botón de inicio
+        play.move_to([4.9, -0.5, 0]) # Posiciona el botón de inicio en la esquina inferior derecha de la escena
+        self.play_button = play # Guarda el botón de inicio en la escena para poder acceder a él en los eventos de mouse
+        self.add(play)
+
 
         # Espera hasta que se presione el botón de inicio (se arrastre el slider y se suelte) para comenzar la simulación
         while not self.empezar:
             self.wait(1 / 60)
         self.remove(slider)
         self.remove(slider_dados)
+        self.remove(self.play_button)
 
-        n_experimentos = self.slider.valor()
-        n_dados = self.slider_dados.valor()
+        n_experimentos = self.slider.valor() # Obtiene el número de experimentos seleccionado en el slider
+        n_dados = self.slider_dados.valor() # Obtiene el número de dados seleccionado en el slider de dados
         histograma = Histograma(n_dados, n_experimentos) # Crea el histograma 
         self.add(histograma) # Agrega el histograma a la escena
 
-        distribucion = DistribucionDados([0] * 6)
-        distribucion.scale(1.3)
+        distribucion = DistribucionDados([0] * 6) # Crea la distribución de dados inicial con conteos de 0 para cada suma
+        distribucion.scale(1.3) 
         distribucion.to_corner(UL)
         distribucion.shift(LEFT*0.15 + DOWN*0.02)
 
-        self.add(distribucion)
+        self.add(distribucion) # Agrega la distribución de dados a la escena
 
         textos_suma_cache = {} # Diccionario para almacenar los objetos de texto de las sumas
-        # Renderiza el texto de cada suma una sola vez y los guarda para evitar renderizarlos cada vez que salgan
-
+        # Renderiza los textos de las sumas de dados (de n_dados a 6*n_dados) y los almacena en el diccionario `textos_suma_cache` para evitar renderizarlos repetidamente durante la animación
         for s in range(n_dados, 6 * n_dados + 1):
             t = Text(f"Sum = {s}").scale(0.9)
             textos_suma_cache[s] = t
-
+        # Genera las tiradas de dados aleatorias y calcula las sumas correspondientes para todos los experimentos
         tiradas = np.random.randint(1, 7, size=(n_experimentos, n_dados))
         sumas = tiradas.sum(axis=1)
-        ## CURVA DE LA NORMAL TEÓRICA
-        mu = n_dados * 3.5 # Media de la distribución  (número de dados * valor medio de cada dado)
-        sigma = np.sqrt(n_dados * 35 / 12) # Desviación estándar de la distribución  (raíz cuadrada de n_dados * varianza de un dado)
-        x_min = n_dados # Valor mínimo de la suma de los dados (10 para 10 dados)
-        x_max = 6 * n_dados # Valor máximo de la suma de los dados (60 para 10 dados)
-        x_vals = np.linspace(n_dados, 6 * n_dados, 150) # Valores de 'x'de la curva, desde la suma mínima (10) hasta la suma máxima (60) con 150 puntos para representarla
-        # Valores de 'y' de la curva, con la fórmula de la función de densidad
-        y_vals = (
-            1 / (sigma * np.sqrt(2 * np.pi))
-        ) * np.exp(
-            -(x_vals - mu)**2 / (2 * sigma**2)
-        )
-        # Altura hasta donde llega la curva (altura objetivo)
-        escala_curva = altura_objetivo * 18
-        # Calcula los puntos modelandolos a la altura objetivo y anchura del histograma
-        puntos = [
-            [
-                np.interp(x, [n_dados, 6 * n_dados], [-histograma.ancho_total/2, histograma.ancho_total/2]),
-                -3.1 + y * escala_curva,
-                0
-            ]
-            for x, y in zip(x_vals, y_vals)
-        ]
-
-        curva = VMobject() # Crea un objeto VMobject para representar la curva de la distribución normal teórica
-        curva.set_points_smoothly(puntos) # Define los puntos de la curva suavemente para que se vea como una curva continua
-        curva.set_color(YELLOW) # Color
-        curva.set_stroke(width=2.2) # Anchura
-        # Anima la creación de la curva de la distribución normal teórica al inicio de la escena
-        self.play(ShowCreation(curva), run_time=1.5)
 
         # Agrega el histograma y la distribución de dados a la escena
         self.add(histograma, distribucion)
@@ -414,7 +376,11 @@ class EscenaDados(InteractiveScene):
         contador = Integer(0) # Contador para mostrar el número de experimentos realizados
         contador.scale(0.7) # Escala del contador
         contador.move_to([-4.9, -0.25, 0]) # Posición del contador
-        self.add(dados, texto_suma, contador) # Agrega los dados, el texto de la suma y el contador a la escena
+        titulo_contador = Text("Lanzamientos")
+        titulo_contador.scale(0.45)
+        titulo_contador.next_to(contador, UP, buff=0.15)
+        titulo_contador.shift(RIGHT * 0.1)
+        self.add(dados, texto_suma, contador, titulo_contador) # Agrega los dados, el texto de la suma y el contador a la escena
 
         # Bucle principal para representar cada experimento 
         for i in range(n_experimentos):
@@ -462,5 +428,36 @@ class EscenaDados(InteractiveScene):
 
                 # Anima la transición en cada salto de animación y en el último experimento
                 self.wait(run_time_animacion)
+
+        ## CURVA DE LA NORMAL TEÓRICA
+        mu = n_dados * 3.5 # Media de la distribución  (número de dados * valor medio de cada dado)
+        sigma = np.sqrt(n_dados * 35 / 12) # Desviación estándar de la distribución  (raíz cuadrada de n_dados * varianza de un dado)
+        x_min = n_dados # Valor mínimo de la suma de los dados (10 para 10 dados)
+        x_max = 6 * n_dados # Valor máximo de la suma de los dados (60 para 10 dados)
+        x_vals = np.linspace(n_dados, 6 * n_dados, 150) # Valores de 'x'de la curva, desde la suma mínima (10) hasta la suma máxima (60) con 150 puntos para representarla
+        # Valores de 'y' de la curva, con la fórmula de la función de densidad
+        y_vals = (
+            1 / (sigma * np.sqrt(2 * np.pi))
+        ) * np.exp(
+            -(x_vals - mu)**2 / (2 * sigma**2)
+        )
+        # Altura hasta donde llega la curva (altura objetivo)
+        escala_curva = altura_objetivo * 18
+        # Calcula los puntos modelandolos a la altura objetivo y anchura del histograma
+        puntos = [
+            [
+                np.interp(x, [n_dados, 6 * n_dados], [-histograma.ancho_total/2, histograma.ancho_total/2]),
+                -3.1 + y * escala_curva,
+                0
+            ]
+            for x, y in zip(x_vals, y_vals)
+        ]
+
+        curva = VMobject() # Crea un objeto VMobject para representar la curva de la distribución normal teórica
+        curva.set_points_smoothly(puntos) # Define los puntos de la curva suavemente para que se vea como una curva continua
+        curva.set_color(YELLOW) # Color
+        curva.set_stroke(width=2.2) # Anchura
+        # Anima la creación de la curva de la distribución normal teórica al inicio de la escena
+        self.play(ShowCreation(curva), run_time=1.5)
 
         self.wait(2)
