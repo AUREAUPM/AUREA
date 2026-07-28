@@ -14,24 +14,38 @@ PROB_JUSTA = [1/6]*6
 PROB_SESGADA = [0.35, 0.25, 0.17, 0.12, 0.07, 0.04,]
 probabilidades = PROB_JUSTA
 CONFIG_DADOS = {
-    5: {
-        "altura_objetivo": 2.8,
-        "escala_curva": 15,
-        "ancho_histograma": 6.2,
+    ("justa", 5): {
+        "ancho_histograma": 5.2,
+        "altura_objetivo": 2.9,
+        "escala_curva": 18,
     },
-    10: {
-        "altura_objetivo": 2.5,
-        "escala_curva": 17,
-        "ancho_histograma": 9.5,
+    ("justa", 10): {
+        "ancho_histograma": 8.2,
+        "altura_objetivo": 3.5,
+        "escala_curva": 18.5,
     },
-    20: {
+    ("justa", 20): {
+        "ancho_histograma": 11.0,
+        "altura_objetivo": 4,
+        "escala_curva": 19.2,
+    },
+
+    ("sesgada", 5): {
+        "ancho_histograma": 5.2,
+        "altura_objetivo": 1.7,
+        "escala_curva": 29,
+    },
+    ("sesgada", 10): {
+        "ancho_histograma": 8.2,
         "altura_objetivo": 2.2,
-        "escala_curva": 21,
-        "ancho_histograma": 12.5,
+        "escala_curva": 28.0,
+    },
+    ("sesgada", 20): {
+        "ancho_histograma": 11.0,
+        "altura_objetivo": 2.8,
+        "escala_curva": 27,
     },
 }
-
-
 # Clase para representar un dado
 class Dado(VGroup):
     def __init__(self, valor=1, size=0.42):
@@ -72,10 +86,13 @@ class Dado(VGroup):
 
 # Clase para representar el histograma de sumas de dados
 class Histograma(VGroup):
-    def __init__(self, n_dados, n_experimentos):
+    def __init__(self, n_dados, n_experimentos, tipo_distribucion="justa"):
         super().__init__()
 
-        config = CONFIG_DADOS[n_dados]
+        self.tipo_distribucion = tipo_distribucion
+        self.n_dados = n_dados
+        self.n_experimentos = n_experimentos
+        config = CONFIG_DADOS[(self.tipo_distribucion, self.n_dados)]
 
         # Configuracion de las caracteristicas de la escena
         self.x_min = n_dados
@@ -291,7 +308,7 @@ class Boton(VGroup):
         super().__init__()
 
         self.seleccionado = seleccionado
-        self.valor = int(texto)
+        self.valor = texto
 
         self.fondo = RoundedRectangle(
             width=width,
@@ -351,7 +368,27 @@ class EscenaDados(InteractiveScene):
                 # Selecciona solo éste
                 b.seleccionar()
 
-                self.n_dados = b.valor
+                self.n_dados = int(b.valor)
+                return
+        for b in self.botones_dist:
+            if (
+                b.get_bounding_box()[0][0] <= point[0] <= b.get_bounding_box()[2][0]
+                and
+                b.get_bounding_box()[0][1] <= point[1] <= b.get_bounding_box()[2][1]
+            ):
+
+                for otro in self.botones_dist:
+                    otro.deseleccionar()
+
+                b.seleccionar()
+
+                if b.valor == "Justa":
+                    self.probabilidades = PROB_JUSTA
+                    self.tipo_distribucion = "justa"
+                else:
+                    self.probabilidades = PROB_SESGADA
+                    self.tipo_distribucion = "sesgada"
+
                 return
     # Maneja el evento de soltar el mouse después de arrastrar el slider
     def on_mouse_release(self, point, button, mods):
@@ -372,8 +409,21 @@ class EscenaDados(InteractiveScene):
         grupo.move_to([4.9, 2.15, 0])
 
         self.add(grupo)
+        bj = Boton("Justa", seleccionado=True)
+        bs = Boton("Sesgada")
+
+        self.botones_dist = [bj, bs]
+        self.probabilidades = PROB_JUSTA
+        self.tipo_distribucion = "justa"
+
+        grupo_dist = VGroup(bj, bs)
+        grupo_dist.arrange(RIGHT, buff=0.25)
+        grupo_dist.to_corner(UL)
+        grupo_dist.shift(RIGHT*0.8 + DOWN*0.2)
+
+        self.add(grupo_dist)
         # Representación inicial de la distribución de dados con conteos iniciales de 0 para cada suma escalado y posicionado en la esquina superior izquierda
-        distribucion = DistribucionDados([0] * 6, probabilidades)
+        distribucion = DistribucionDados([0] * 6, self.probabilidades)
         distribucion.scale(1.3) 
         distribucion.to_corner(UL)
         distribucion.shift(LEFT*0.15 + DOWN*0.02)
@@ -405,14 +455,16 @@ class EscenaDados(InteractiveScene):
             self.wait(1 / 60)
         self.remove(slider)
         self.remove(self.play_button)
+        self.remove(grupo_dist)
         self.remove(grupo)
+
 
         n_experimentos = self.slider.valor() # Obtiene el número de experimentos seleccionado en el slider
         n_dados = self.n_dados
-        histograma = Histograma(n_dados, n_experimentos) # Crea el histograma 
+        histograma = Histograma(n_dados, n_experimentos, tipo_distribucion=self.tipo_distribucion) # Crea el histograma 
         self.add(histograma) # Agrega el histograma a la escena
 
-        distribucion = DistribucionDados([0] * 6, probabilidades) # Crea la distribución de dados inicial con conteos de 0 para cada suma
+        distribucion = DistribucionDados([0] * 6, self.probabilidades) # Crea la distribución de dados inicial con conteos de 0 para cada suma
         distribucion.scale(1.3) 
         distribucion.to_corner(UL)
         distribucion.shift(LEFT*0.15 + DOWN*0.02)
@@ -426,7 +478,7 @@ class EscenaDados(InteractiveScene):
             textos_suma_cache[s] = t
         # Genera las tiradas de dados aleatorias y calcula las sumas correspondientes para todos los experimentos
         caras = np.arange(1, 7) # Caras del dado (1 a 6)
-        tiradas = np.random.choice(caras, size=(n_experimentos, n_dados), p=probabilidades) # Genera una matriz de tiradas aleatorias de dados con las probabilidades especificadas
+        tiradas = np.random.choice(caras, size=(n_experimentos, n_dados), p=self.probabilidades) # Genera una matriz de tiradas aleatorias de dados con las probabilidades especificadas
         sumas = tiradas.sum(axis=1)
 
         # Agrega el histograma y la distribución de dados a la escena
@@ -476,7 +528,7 @@ class EscenaDados(InteractiveScene):
                     for k in range(1, 7)
                 ]
 
-                nueva_dist = DistribucionDados(conteos, probabilidades) # Crea una nueva distribución de dados con los conteos actualizados
+                nueva_dist = DistribucionDados(conteos, self.probabilidades) # Crea una nueva distribución de dados con los conteos actualizados
                 nueva_dist.scale(1.3) # Escala
                 # Posición
                 nueva_dist.to_corner(UL)
@@ -507,8 +559,8 @@ class EscenaDados(InteractiveScene):
         # Calcula la media y la desviación típica a partir de las probabilidades
         caras = np.arange(1, 7)
 
-        media_dado = np.sum(caras * probabilidades)
-        varianza_dado = np.sum(((caras - media_dado) ** 2) * probabilidades)
+        media_dado = np.sum(caras * self.probabilidades)
+        varianza_dado = np.sum(((caras - media_dado) ** 2) * self.probabilidades)
 
         mu = n_dados * media_dado
         sigma = np.sqrt(n_dados * varianza_dado)
@@ -521,8 +573,8 @@ class EscenaDados(InteractiveScene):
             -(x_vals - mu) ** 2 / (2 * sigma ** 2)
         )
 
-        config = CONFIG_DADOS[n_dados]
-        escala_curva = config["altura_objetivo"] * config["escala_curva"]
+        config = CONFIG_DADOS[(self.tipo_distribucion, self.n_dados)]
+        escala_curva = config["escala_curva"]
 
         puntos = [
             [
