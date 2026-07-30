@@ -10,26 +10,28 @@ from collections import defaultdict
 salto_animacion = 5
 # Duración de cada frame animado (en segundos)
 run_time_animacion = 0.07
-PROB_JUSTA = [1/6]*6
-PROB_SESGADA = [0.35, 0.25, 0.17, 0.12, 0.07, 0.04,]
-probabilidades = PROB_JUSTA
+
+
+PROB_JUSTA = [1/6]*6 # Probabilidades de cada cara del dado para un dado justo (1/6 para cada cara)
+PROB_SESGADA = [0.35, 0.25, 0.17, 0.12, 0.07, 0.04,] # Probabilidades de cada cara del dado para un dado sesgado (mayor probabilidad de obtener caras bajas)
+probabilidades = PROB_JUSTA # Probabilidades iniciales
+# Diccionario de configuración para diferentes combinaciones de tipo de dado y número de dados, que contiene parámetros para el histograma y la curva teórica
 CONFIG_DADOS = {
     ("justa", 5): {
         "ancho_histograma": 5.2,
-        "altura_objetivo": 2.9,
-        "escala_curva": 18,
+        "altura_objetivo": 3,
+        "escala_curva": 50,
     },
     ("justa", 10): {
         "ancho_histograma": 8.2,
-        "altura_objetivo": 3.5,
-        "escala_curva": 18.5,
+        "altura_objetivo": 3,
+        "escala_curva": 50,
     },
     ("justa", 20): {
         "ancho_histograma": 11.0,
-        "altura_objetivo": 4,
-        "escala_curva": 19.2,
+        "altura_objetivo": 3,
+        "escala_curva": 50,
     },
-
     ("sesgada", 5): {
         "ancho_histograma": 5.2,
         "altura_objetivo": 1.7,
@@ -37,15 +39,17 @@ CONFIG_DADOS = {
     },
     ("sesgada", 10): {
         "ancho_histograma": 8.2,
-        "altura_objetivo": 2.2,
-        "escala_curva": 28.0,
+        "altura_objetivo": 3,
+        "escala_curva": 50,
     },
     ("sesgada", 20): {
         "ancho_histograma": 11.0,
-        "altura_objetivo": 2.8,
-        "escala_curva": 27,
+        "altura_objetivo": 3,
+        "escala_curva": 50,
     },
 }
+
+
 # Clase para representar un dado
 class Dado(VGroup):
     def __init__(self, valor=1, size=0.42):
@@ -89,24 +93,23 @@ class Histograma(VGroup):
     def __init__(self, n_dados, n_experimentos, tipo_distribucion="justa"):
         super().__init__()
 
-        self.tipo_distribucion = tipo_distribucion
-        self.n_dados = n_dados
-        self.n_experimentos = n_experimentos
-        config = CONFIG_DADOS[(self.tipo_distribucion, self.n_dados)]
+        self.tipo_distribucion = tipo_distribucion # Tipo de distribución de los dados (justa o sesgada)
+        self.n_dados = n_dados # Número de dados lanzados
+        self.n_experimentos = n_experimentos # Número de experimentos realizados (lanzamientos de dados)
+        config = CONFIG_DADOS[(self.tipo_distribucion, self.n_dados)] # Diccionario de configuración para la combinación de tipo de dado y número de dados, que contiene parámetros para el histograma y la curva teórica
 
-        # Configuracion de las caracteristicas de la escena
-        self.x_min = n_dados
-        self.x_max = 6 * n_dados
-        self.n_barras = self.x_max - self.x_min + 1
-        self.base_y = -3.1
+        self.x_min = n_dados # Valor mínimo de la suma de los dados (cuando todos los dados muestran 1)
+        self.x_max = 6 * n_dados # Valor máximo de la suma de los dados (cuando todos los dados muestran 6)
+        self.n_barras = self.x_max - self.x_min + 1 # Número de barras en el histograma (una barra para cada posible suma de los dados)
+        self.base_y = -3.1 # Coordenada 'y' de la base del histograma (donde se dibuja el eje horizontal)
 
-        self.ancho_total = config["ancho_histograma"]
-        altura_objetivo = config["altura_objetivo"]
+        self.ancho_total = config["ancho_histograma"] # Ancho total del histograma (en unidades de Manim)
+        altura_objetivo = config["altura_objetivo"] # Altura objetivo del histograma (en unidades de Manim)
 
-        max_experimentos = 2000
-        self.altura_bloque = altura_objetivo / (0.06 * max_experimentos)
-        self.ancho_bloque = self.ancho_total / self.n_barras * 0.82
-        self.separacion = self.ancho_total / self.n_barras * 0.18
+        max_experimentos = 2000 # Número máximo de experimentos para calcular la altura de los bloques del histograma
+        self.altura_bloque = altura_objetivo / (0.06 * max_experimentos) # Altura de cada bloque del histograma (proporcional a la cantidad de experimentos realizados)
+        self.ancho_bloque = self.ancho_total / self.n_barras * 0.82 # Ancho de cada bloque del histograma (proporcional al ancho total y al número de barras)
+        self.separacion = self.ancho_total / self.n_barras * 0.18 # Separación entre bloques del histograma (proporcional al ancho total y al número de barras)
         self.color_hist     = "#7bc96f" # Color de los bloques del histograma
         self.color_activo   = "#d9a066" # Color del bloque activo 
         self.color_eje      = "#d8d8d8" # Color del eje
@@ -297,36 +300,18 @@ class Slider(VGroup):
         return self.valores[self.index]
     
 
+# Clase para representar un botón interactivo que permite seleccionar entre diferentes opciones (por ejemplo, número de dados o tipo de distribución)
 class Boton(VGroup):
-    def __init__(
-        self,
-        texto,
-        width=1.0,
-        height=0.5,
-        seleccionado=False
-    ):
+    def __init__(self, texto, width=1.0, height=0.5, seleccionado=False):
         super().__init__()
-
-        self.seleccionado = seleccionado
-        self.valor = texto
-
-        self.fondo = RoundedRectangle(
-            width=width,
-            height=height,
-            corner_radius=0.08
-        )
-
-        self.etiqueta = Text(
-            texto,
-            font_size=24
-        )
-
-        self.etiqueta.move_to(self.fondo.get_center())
-
-        self.add(self.fondo, self.etiqueta)
-
-        self.actualizar_color()
-
+        self.seleccionado = seleccionado # Indica si el botón está seleccionado actualmente
+        self.valor = texto # Valor del botón (por ejemplo, número de dados o tipo de distribución)
+        self.fondo = RoundedRectangle(width=width, height=height, corner_radius=0.08) # Fondo del botón como un rectángulo redondeado
+        self.etiqueta = Text(texto, font_size=24) # Etiqueta del botón que muestra el texto correspondiente
+        self.etiqueta.move_to(self.fondo.get_center()) # Mueve la etiqueta al centro del fondo del botón
+        self.add(self.fondo, self.etiqueta) # Agrega el fondo y la etiqueta al grupo del botón
+        self.actualizar_color() # Actualiza el color del botón según si está seleccionado o no
+    # Actualiza el color del botón según si está seleccionado o no
     def actualizar_color(self):
         if self.seleccionado:
             self.fondo.set_fill("#2d9cdb", opacity=1)
@@ -334,11 +319,11 @@ class Boton(VGroup):
         else:
             self.fondo.set_fill("#2b2b2b", opacity=1)
             self.fondo.set_stroke(WHITE, width=1)
-
+    # Selecciona el botón y actualiza su color
     def seleccionar(self):
         self.seleccionado = True
         self.actualizar_color()
-
+    # Deselecciona el botón y actualiza su color
     def deseleccionar(self):
         self.seleccionado = False
         self.actualizar_color()
@@ -355,40 +340,39 @@ class EscenaDados(InteractiveScene):
         elif self.play_button.get_bounding_box()[0][0] <= point[0] <= self.play_button.get_bounding_box()[2][0] \
             and self.play_button.get_bounding_box()[0][1] <= point[1] <= self.play_button.get_bounding_box()[2][1]:
             self.empezar = True
+        # Verifica si el punto del mouse está dentro del área de alguno de los botones de selección de número de dados o tipo de distribución
         for b in self.botones_dados:
             if (
-                b.get_bounding_box()[0][0] <= point[0] <= b.get_bounding_box()[2][0]
+                b.get_bounding_box()[0][0] <= point[0] <= b.get_bounding_box()[2][0] 
                 and
                 b.get_bounding_box()[0][1] <= point[1] <= b.get_bounding_box()[2][1]
             ):
-                # Primero deselecciona todos
+                # Deselecciona todos los botones de selección de número de dados
                 for otro in self.botones_dados:
                     otro.deseleccionar()
-
-                # Selecciona solo éste
+                # Selecciona el botón correspondiente al número de dados seleccionado
                 b.seleccionar()
-
-                self.n_dados = int(b.valor)
+                self.n_dados = int(b.valor) # Actualiza el número de dados a lanzar según el valor del botón seleccionado
                 return
+        # Verifica si el punto del mouse está dentro del área de alguno de los botones de selección de tipo de distribución
         for b in self.botones_dist:
             if (
-                b.get_bounding_box()[0][0] <= point[0] <= b.get_bounding_box()[2][0]
+                b.get_bounding_box()[0][0] <= point[0] <= b.get_bounding_box()[2][0] 
                 and
                 b.get_bounding_box()[0][1] <= point[1] <= b.get_bounding_box()[2][1]
             ):
-
+                # Deselecciona todos los botones de selección de tipo de distribución
                 for otro in self.botones_dist:
                     otro.deseleccionar()
-
+                # Selecciona el botón correspondiente a la distribución seleccionada
                 b.seleccionar()
-
+                # Si esta seleccionado el botón de la distribución 'Justa' se ejecuta con probabilidad 1/6
                 if b.valor == "Justa":
                     self.probabilidades = PROB_JUSTA
                     self.tipo_distribucion = "justa"
                 else:
                     self.probabilidades = PROB_SESGADA
                     self.tipo_distribucion = "sesgada"
-
                 return
     # Maneja el evento de soltar el mouse después de arrastrar el slider
     def on_mouse_release(self, point, button, mods):
@@ -399,29 +383,27 @@ class EscenaDados(InteractiveScene):
             self.arrastrando.mover_a(point[0])
     # Método principal que construye la escena
     def construct(self):
-        b1 = Boton("5", seleccionado=True)
-        b2 = Boton("10")
-        b3 = Boton("20")
-        self.botones_dados = [b1, b2, b3]
-        self.n_dados = 5
-        grupo = VGroup(b1, b2, b3)
-        grupo.arrange(RIGHT, buff=0.25)
-        grupo.move_to([4.9, 2.15, 0])
+        b1 = Boton("5", seleccionado=True) # Define el boton de 5 dados
+        b2 = Boton("10") # Define el botón de 10 dados
+        b3 = Boton("20") # Define el botón de 20 dados
+        self.botones_dados = [b1, b2, b3] # Lista con los botones para seleccionar el número de dados
+        self.n_dados = 5 # Número de dados seleccionado por defecto
+        grupo = VGroup(b1, b2, b3) # Agrupa los botones del número de dados
+        grupo.arrange(RIGHT, buff=0.25) # Los coloca horizontalmente
+        grupo.move_to([4.9, 2.15, 0]) # Posiciona el grupo en la parte superior derecha
+        self.add(grupo) # Agrega el grupo de botones a la escena
 
-        self.add(grupo)
-        bj = Boton("Justa", seleccionado=True)
-        bs = Boton("Sesgada")
+        bj = Boton("Justa", seleccionado=True) # Botón para la distribución justa
+        bs = Boton("Sesgada") # Botón para la distribución sesgada
+        self.botones_dist = [bj, bs] # Lista de botones de distribución
+        self.probabilidades = PROB_JUSTA # Probabilidades seleccionadas por defecto
+        self.tipo_distribucion = "justa" # Tipo de distribución inicial
+        grupo_dist = VGroup(bj, bs) # Agrupa los botones de distribución
+        grupo_dist.arrange(RIGHT, buff=0.25) # Los coloca horizontalmente
+        grupo_dist.to_corner(UL) # Sitúa el grupo en la esquina superior izquierda
+        grupo_dist.shift(RIGHT*0.8 + DOWN*0.2) # Ajusta ligeramente su posición
+        self.add(grupo_dist) # Agrega los botones de distribución
 
-        self.botones_dist = [bj, bs]
-        self.probabilidades = PROB_JUSTA
-        self.tipo_distribucion = "justa"
-
-        grupo_dist = VGroup(bj, bs)
-        grupo_dist.arrange(RIGHT, buff=0.25)
-        grupo_dist.to_corner(UL)
-        grupo_dist.shift(RIGHT*0.8 + DOWN*0.2)
-
-        self.add(grupo_dist)
         # Representación inicial de la distribución de dados con conteos iniciales de 0 para cada suma escalado y posicionado en la esquina superior izquierda
         distribucion = DistribucionDados([0] * 6, self.probabilidades)
         distribucion.scale(1.3) 
@@ -438,8 +420,6 @@ class EscenaDados(InteractiveScene):
         self.add(slider) # Agrega el slider a la escena
         # Crea un segundo slider para seleccionar el número de dados a lanzar (5, 10 o 20)
         
-        
-        
         play_rect = Rectangle(width=2.0, height=0.8) # Crea un rectángulo que representa el botón de inicio (PLAY)
         play_rect.set_fill(GREEN, opacity=0.9) # Color de relleno del botón
         play_rect.set_stroke(WHITE, width=2) # Color del borde del botón
@@ -449,18 +429,17 @@ class EscenaDados(InteractiveScene):
         self.play_button = play # Guarda el botón de inicio en la escena para poder acceder a él en los eventos de mouse
         self.add(play)
 
-
         # Espera hasta que se presione el botón de inicio (se arrastre el slider y se suelte) para comenzar la simulación
         while not self.empezar:
             self.wait(1 / 60)
+        # Elimina los controles de configuración para dejar espacio a la simulación
         self.remove(slider)
         self.remove(self.play_button)
         self.remove(grupo_dist)
         self.remove(grupo)
 
-
         n_experimentos = self.slider.valor() # Obtiene el número de experimentos seleccionado en el slider
-        n_dados = self.n_dados
+        n_dados = self.n_dados 
         histograma = Histograma(n_dados, n_experimentos, tipo_distribucion=self.tipo_distribucion) # Crea el histograma 
         self.add(histograma) # Agrega el histograma a la escena
 
@@ -468,7 +447,6 @@ class EscenaDados(InteractiveScene):
         distribucion.scale(1.3) 
         distribucion.to_corner(UL)
         distribucion.shift(LEFT*0.15 + DOWN*0.02)
-
         self.add(distribucion) # Agrega la distribución de dados a la escena
 
         textos_suma_cache = {} # Diccionario para almacenar los objetos de texto de las sumas
@@ -519,22 +497,18 @@ class EscenaDados(InteractiveScene):
                 i % salto_animacion == salto_animacion - 1
                 or i == n_experimentos - 1
             )
-
             if renderizar:
-
                 # Calcula los conteos de cada valor de dado (1 a 6) en la tirada actual para actualizar la distribución de dados
                 conteos = [
                     int(np.sum(tirada == k))
                     for k in range(1, 7)
                 ]
-
                 nueva_dist = DistribucionDados(conteos, self.probabilidades) # Crea una nueva distribución de dados con los conteos actualizados
                 nueva_dist.scale(1.3) # Escala
                 # Posición
                 nueva_dist.to_corner(UL)
                 nueva_dist.shift(LEFT*0.15 + DOWN*0.02)
                 distribucion.become(nueva_dist) # Actualiza la distribución de dados en la escena con la nueva distribución creada
-
                 # Crea los nuevos dados haciendo referencia al Vgroup `Dado`
                 nuevos_dados = VGroup(*[
                     Dado(valor=int(v), size=0.42)
@@ -544,38 +518,34 @@ class EscenaDados(InteractiveScene):
                 nuevos_dados.arrange_in_grid(filas, columnas, buff=0.22)
                 nuevos_dados.move_to([4.9, 2.15, 0]) # Mueve los nuevos dados a la posición en la esquina superior derecha
                 dados.become(nuevos_dados) # Actualiza los dados en la escena con los nuevos dados creados
-
                 nuevo_texto = textos_suma_cache[suma].copy() # Crea un nuevo texto de la suma actual buscando en el diccionario de textos renderizados
                 nuevo_texto.next_to(nuevos_dados, DOWN, buff=0.35) # Posiciona el nuevo texto
                 texto_suma.become(nuevo_texto) # Actualiza el texto de la suma en la escena con el nuevo texto creado
-
                 # Actualiza el contador de experimentos realizados
                 contador.set_value(i + 1)
-
                 # Anima la transición en cada salto de animación y en el último experimento
                 self.wait(run_time_animacion)
 
         ## CURVA DE LA NORMAL TEÓRICA
-        # Calcula la media y la desviación típica a partir de las probabilidades
+        # Calcula la media y la desviación típica de un dado según las probabilidades seleccionadas
         caras = np.arange(1, 7)
-
         media_dado = np.sum(caras * self.probabilidades)
         varianza_dado = np.sum(((caras - media_dado) ** 2) * self.probabilidades)
-
+        # Calcula la media y la desviación típica de la suma de n_dados
         mu = n_dados * media_dado
         sigma = np.sqrt(n_dados * varianza_dado)
-
+        # Genera los valores del eje X para representar la curva normal
         x_vals = np.linspace(n_dados, 6 * n_dados, 150)
-
+        # Calcula la densidad de la distribución normal teórica
         y_vals = (
             1 / (sigma * np.sqrt(2 * np.pi))
         ) * np.exp(
             -(x_vals - mu) ** 2 / (2 * sigma ** 2)
         )
-
+        # Obtiene la escala vertical correspondiente a la configuración seleccionada
         config = CONFIG_DADOS[(self.tipo_distribucion, self.n_dados)]
         escala_curva = config["escala_curva"]
-
+        # Convierte la curva teórica a coordenadas de la escena
         puntos = [
             [
                 np.interp(
@@ -588,12 +558,12 @@ class EscenaDados(InteractiveScene):
             ]
             for x, y in zip(x_vals, y_vals)
         ]
-
+        # Crea la curva normal suavizando los puntos calculados
         curva = VMobject()
         curva.set_points_smoothly(puntos)
         curva.set_color(YELLOW)
         curva.set_stroke(width=2.2)
-
+        # Anima la aparición de la curva normal sobre el histograma
         self.play(ShowCreation(curva), run_time=1.5)
-
+        # Mantiene la escena unos segundos antes de finalizar
         self.wait(2)
