@@ -1,7 +1,5 @@
 # Explicación intuitiva del Teorema Central del Límite
 
-Autor: **David Fernández Álvarez**, Universidad Politécnica de Madrid.
-
 Recurso para **Estadística y Optimización**, Grado en Ingeniería Civil y Territorial. Proyecto AUREA: Aprendizaje y Uso del Razonamiento Estadístico y la Aleatoriedad (IE26.0405), financiado por la Universidad Politécnica de Madrid.
 
 - [Usar el simulador en línea](https://blogs.upm.es/pie-aurea/).
