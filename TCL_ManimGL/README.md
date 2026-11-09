@@ -5,12 +5,10 @@ Autor: **David Fernández Álvarez**, Universidad Politécnica de Madrid.
 Recurso para **Estadística y Optimización**, Grado en Ingeniería Civil y Territorial. Proyecto AUREA: Aprendizaje y Uso del Razonamiento Estadístico y la Aleatoriedad (IE26.0405), financiado por la Universidad Politécnica de Madrid.
 
 - [Usar el simulador en línea](https://blogs.upm.es/pie-aurea/).
-- [Leer la guía](documentacion/guia_usuario_tcl.pdf).
-- [Editar la guía en LaTeX](documentacion/guia_usuario_tcl.tex).
 
 ## Estado y ubicación prevista
 
-Primera incorporación al repositorio: 9 de noviembre de 2026, a partir del paquete preparado el 6 de noviembre. Guía v0.1, borrador para revisión; DOI aún no asignado.
+Primera incorporación al repositorio: 9 de noviembre de 2026, a partir del paquete preparado el 6 de noviembre. Código de la beta local del simulador.
 
 Ubicación: `AUREA/TCL_ManimGL/`, al mismo nivel que la carpeta `AUREA/ManimGL/` que conserva el trabajo de Iván. No sustituir ni renombrar esa carpeta existente.
 
@@ -40,16 +38,6 @@ manimgl dados.py DemoInterfaz
 
 El archivo requirements fija la versión principal de ManimGL; no bloquea todas las dependencias transitivas. Una futura edición reproducible debería conservar un listado completo del entorno probado.
 
-## Compilar la guía
+## Licencia
 
-Abrir `documentacion/guia_usuario_tcl.tex` en TeXShop o un editor LaTeX. Mantener la carpeta `recursos` junto al `.tex`. Compilar con pdfLaTeX dos veces para actualizar el índice. No requiere conexión ni paquetes externos de ejecución de código.
-
-## Pendientes editoriales
-
-- Completar el nombre de Iván y describir su contribución con precisión.
-- Confirmar la licencia de la guía: propuesta CC BY-NC 4.0.
-- Decidir por separado la licencia del código.
-- Cerrar una versión definitiva y añadir su identificador de revisión.
-- Tramitar el depósito institucional e incorporar el DOI real cuando se asigne.
-
-No se ha aplicado todavía una licencia definitiva a este paquete. La propuesta para la guía no modifica las licencias de ManimGL o de otros componentes.
+La licencia del código está pendiente de definir. Se mantienen las licencias propias de ManimGL y sus dependencias.
