@@ -1,0 +1,448 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
+\usepackage{lmodern,microtype}
+\usepackage[a4paper,margin=25mm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb,array,booktabs,tabularx,enumitem}
+\usepackage[table]{xcolor}
+\usepackage{graphicx,titlesec,tcolorbox,caption,fancyhdr,listings}
+\tcbuselibrary{breakable,skins}
+\definecolor{azul}{HTML}{123E60}
+\definecolor{medio}{HTML}{27678B}
+\definecolor{claro}{HTML}{EDF4FA}
+\definecolor{gris}{HTML}{536574}
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection.}{.65em}{}
+\titleformat{\subsection}{\large\bfseries\color{medio}}{\thesubsection.}{.65em}{}
+\titleformat{\part}[display]{\color{azul}\bfseries}{\large Parte \thepart}{6pt}{\huge}
+\titlespacing*{\section}{0pt}{15pt}{7pt}
+\titlespacing*{\subsection}{0pt}{11pt}{5pt}
+\captionsetup{hypcap=false,font=small,labelfont={bf,color=azul},textfont=it}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=azul,urlcolor=medio,pdftitle={Explicación intuitiva del Teorema Central del Límite: guía de usuario},pdfauthor={David Fernández Álvarez},pdfsubject={Recurso educativo para Estadística y Optimización. Proyecto AUREA}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=*,topsep=5pt}
+\renewcommand{\arraystretch}{1.2}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\version}{0.1}
+\newcommand{\fecha}{6 de noviembre de 2026}
+\newcommand{\pendiente}{\textbf{[Pendiente de completar]}}
+\newcommand{\web}{\url{https://blogs.upm.es/pie-aurea/}}
+\newtcolorbox{nota}[1]{enhanced,breakable,colback=claro,colframe=medio,boxrule=.35pt,leftrule=2pt,arc=0pt,title=#1,colbacktitle=claro,coltitle=azul,fonttitle=\bfseries,left=9pt,right=9pt,top=6pt,bottom=6pt}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{claro},frame=single,rulecolor=\color{medio},breaklines=true,columns=fullflexible,keepspaces=true,showstringspaces=false}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{azul} Teorema Central del Límite · AUREA}
+\fancyhead[R]{\small\color{azul} Guía de usuario · v.\version}
+\fancyfoot[L]{\footnotesize\color{gris} David Fernández Álvarez · UPM}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{.3pt}
+\setcounter{tocdepth}{1}
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}\thispagestyle{empty}
+{\color{azul}\small\bfseries UNIVERSIDAD POLITÉCNICA DE MADRID}\par
+{\small E.T.S. de Ingenieros de Caminos, Canales y Puertos}\par
+\vspace{12mm}
+{\color{medio}\rule{\textwidth}{.7pt}}\par\vspace{5mm}
+{\raggedright\color{azul}\Huge\bfseries Explicación intuitiva del Teorema Central del Límite\par}
+\vspace{5mm}{\color{medio}\rule{\textwidth}{.7pt}}\par
+\vspace{4mm}{\Large\bfseries Guía de usuario}\par
+{\large Simulador en línea y aplicación local en ManimGL}\par
+\vspace{5mm}
+\begin{center}\includegraphics[width=.86\linewidth]{recursos/simulador-web.png}\end{center}
+\vspace{3mm}
+{\large\bfseries\color{azul} David Fernández Álvarez}\par
+{\small Departamento de Matemática e Informática Aplicadas a las Ingenierías Civil y Naval\par
+\href{mailto:david.fernandezalv@upm.es}{david.fernandezalv@upm.es}\quad
+\href{https://orcid.org/0000-0002-4717-0985}{ORCID: 0000-0002-4717-0985}}\par
+\vfill
+{\small\begin{tabularx}{\textwidth}{@{}p{34mm}Y@{}}\toprule
+Asignatura & Estadística y Optimización · Grado en Ingeniería Civil y Territorial\\
+Versión de la guía & \version{} · Borrador para revisión · \fecha\\
+Depósito y DOI & Archivo Digital UPM: depósito previsto; DOI pendiente\\
+Licencia de la guía & Propuesta: CC BY-NC 4.0; pendiente de confirmación\\
+Acceso al simulador & \web\\\bottomrule
+\end{tabularx}}
+\end{titlepage}\hypersetup{pageanchor=true}
+
+\section*{Acerca de esta guía}
+\addcontentsline{toc}{section}{Acerca de esta guía}
+Este recurso permite explorar el Teorema Central del Límite (TCL) mediante la suma de resultados de dados independientes. El usuario elige la distribución de un dado, el número de dados por lanzamiento y el número de repeticiones. La simulación conecta cada suma con su incorporación a un histograma y permite compararlo con una curva normal de parámetros teóricos.
+
+La guía documenta dos implementaciones de una misma propuesta didáctica. La versión inicial se desarrolló en \textbf{Python con ManimGL}. La versión web se reimplementó en \textbf{TypeScript}, que se transforma en JavaScript, junto con HTML y CSS. WordPress presenta el simulador mediante una inserción de la aplicación alojada en GitHub Pages. La versión web ejecuta simulaciones interactivas; no reproduce un vídeo de ManimGL.
+
+\begin{nota}{Dos itinerarios de lectura}
+\textbf{Parte I. Uso en línea:} acceso, controles, interpretación matemática, actividades y orientaciones para el profesorado. No requiere programar ni instalar ManimGL.
+
+\textbf{Parte II. Uso local con ManimGL:} organización de archivos, instalación, ejecución, diferencias entre versiones y pautas de adaptación y conservación del recurso.
+\end{nota}
+
+\textbf{Contexto docente.} Estadística y Optimización del Grado en Ingeniería Civil y Territorial de la Universidad Politécnica de Madrid. Las actividades que se proponen pueden adaptarse a otras asignaturas introductorias de probabilidad y estadística.
+
+\textbf{Financiación.} Recurso realizado en el marco del proyecto \textbf{AUREA: Aprendizaje y Uso del Razonamiento Estadístico y la Aleatoriedad (IE26.0405)}, Proyecto de Innovación Educativa financiado por la Universidad Politécnica de Madrid.
+
+\textbf{Alcance de esta edición.} Se describen la aplicación web consultada y los módulos de la beta local disponibles en la fecha de revisión. Las propuestas de actividad y evaluación son orientaciones de uso; no se presentan como resultados de una investigación sobre su eficacia.
+
+\clearpage
+{\small\setlength{\parskip}{0pt}\tableofcontents}
+
+\clearpage\part{Guía de la versión en línea}
+\section{Acceso y primera simulación}
+\begin{tabularx}{\textwidth}{@{}p{39mm}Y@{}}\toprule
+Destinatarios & Alumnado y profesorado de Estadística y Optimización.\\
+Conocimientos previos & Probabilidad discreta, frecuencia, media, varianza y nociones de distribución normal.\\
+Material necesario & Ordenador con navegador y conexión a Internet. Papel o documento de registro.\\
+Acceso & \web. No se requiere una cuenta para utilizar el simulador.\\
+Modalidades & Demostración en clase, trabajo individual o exploración en parejas.\\
+Duración propuesta & 15--20 minutos de exploración o una sesión guiada de 50 minutos.\\\bottomrule
+\end{tabularx}
+
+\subsection{Inicio rápido}
+\begin{enumerate}
+\item Abre la página de AUREA y localiza el recurso \emph{Explicación intuitiva del Teorema Central del Límite}.
+\item Selecciona \textbf{Uniforme}, \textbf{2} dados por lanzamiento y \textbf{1000} lanzamientos.
+\item Pulsa \textbf{Simular}. Observa los dados, su suma y el crecimiento del histograma inferior.
+\item Espera a que termine. Aparecerán la curva amarilla y los parámetros de la aproximación normal.
+\item Conserva los 1000 lanzamientos y repite con \textbf{16} dados. Compara la forma de ambos histogramas.
+\end{enumerate}
+
+Si la zona insertada resulta pequeña, utiliza el enlace \emph{Abrir el simulador en una ventana independiente}, situado debajo del recurso. La dirección directa es \url{https://davidfernandezalv.github.io/aurea-tcl/}.
+
+\begin{nota}{Qué significa un lanzamiento}
+Un lanzamiento consiste en generar simultáneamente los resultados de los $n$ dados seleccionados y calcular su suma. Si eliges $n=16$ y $N=1000$, se generan 1000 sumas, cada una de 16 resultados: 16\,000 valores individuales en total.
+\end{nota}
+
+\clearpage\section{Controles y lectura de la pantalla}
+\begin{center}\includegraphics[width=.87\linewidth]{recursos/simulador-web.png}
+\captionof{figure}{Versión web: 1000 lanzamientos de 16 dados con distribución sesgada. Los resultados concretos cambian en cada ejecución. La captura muestra el simulador sin la cabecera de WordPress.}\end{center}
+
+\begin{tabularx}{\textwidth}{@{}p{39mm}Y@{}}\toprule
+\textbf{Elemento} & \textbf{Función e interpretación}\\\midrule
+Distribución & Uniforme, Sesgada o En V: determina las probabilidades de las seis caras de cada dado.\\
+N.º lanzamientos & Deslizador con los valores 10, 100, 200, \ldots, 5000. No permite elegir todos los enteros intermedios.\\
+Dados por lanzamiento & Selección de 2, 6, 10 o 16 dados independientes con la misma distribución.\\
+Simular & Inicia una nueva simulación con la configuración seleccionada.\\
+Diagrama azul & Probabilidades teóricas de las caras de un dado; no son frecuencias observadas.\\
+Dados y progreso & Última tirada mostrada y número de lanzamientos ya incorporados al histograma.\\
+Suma y bloque lima & Relacionan la tirada mostrada con su posición en el histograma durante la animación.\\
+Histograma verde & Frecuencias de las sumas obtenidas: cada suma registrada incrementa una barra.\\
+Curva amarilla & Referencia normal calculada con la media y desviación típica teóricas de la suma.\\\bottomrule
+\end{tabularx}
+
+Al finalizar, las barras quedan completamente verdes: desaparece el bloque lima. El número de la última suma permanece en lima. La interfaz agrupa actualizaciones para acelerar la animación; se incluyen todas las tiradas, aunque solo se vea la última de cada lote.
+
+\clearpage\section{Distribuciones y fundamento matemático}
+Sea $X$ el valor de un dado. Las tres opciones usan las siguientes probabilidades:
+\begin{center}\begin{tabular}{@{}lcccccc@{}}\toprule
+ & $1$ & $2$ & $3$ & $4$ & $5$ & $6$\\\midrule
+Uniforme & $1/6$ & $1/6$ & $1/6$ & $1/6$ & $1/6$ & $1/6$\\
+Sesgada & $1/21$ & $2/21$ & $3/21$ & $4/21$ & $5/21$ & $6/21$\\
+En V & $3/12$ & $2/12$ & $1/12$ & $1/12$ & $2/12$ & $3/12$\\\bottomrule
+\end{tabular}\end{center}
+La opción Sesgada favorece los valores altos. En V favorece los extremos y es simétrica respecto de $3{,}5$. Uniforme y En V comparten media, pero no varianza.
+
+\subsection{Qué variable se representa}
+Cada observación del histograma es una suma
+\[
+S_n=X_1+\cdots+X_n,
+\qquad E(S_n)=n\mu_X,\qquad \operatorname{Var}(S_n)=n\sigma_X^2.
+\]
+Los $X_i$ se modelizan como independientes y con idéntica distribución. En pantalla, los símbolos $\mu$ y $\sigma$ identifican la media y la desviación típica \emph{de la suma}: $\mu=n\mu_X$ y $\sigma=\sqrt n\,\sigma_X$. No son estimaciones obtenidas de la muestra simulada.
+
+\begin{center}\begin{tabular}{@{}lccc@{}}\toprule
+Distribución & $\mu_X$ & $\sigma_X^2$ & $\sigma_X$ (aprox.)\\\midrule
+Uniforme & $7/2$ & $35/12$ & $1{,}708$\\
+Sesgada & $13/3$ & $20/9$ & $1{,}491$\\
+En V & $7/2$ & $47/12$ & $1{,}979$\\\bottomrule
+\end{tabular}\end{center}
+
+\subsection{Qué afirma el TCL en este modelo}
+Para variables independientes e idénticamente distribuidas con varianza finita y positiva,
+\[
+Z_n=\frac{S_n-n\mu_X}{\sqrt n\,\sigma_X}
+\xrightarrow[n\to\infty]{\mathcal D}\mathcal N(0,1).
+\]
+Por tanto, para $n$ suficientemente grande, una normal con media $n\mu_X$ y varianza $n\sigma_X^2$ aproxima la distribución de $S_n$. El simulador representa las sumas sin tipificar: el eje horizontal va de $n$ a $6n$. El valor $n=16$ ilustra una aproximación, no garantiza un ajuste exacto ni constituye un umbral universal del teorema.
+
+\begin{nota}{Dos cantidades con papeles distintos}
+\textbf{$n$: dados por lanzamiento.} Cambia la distribución de la suma y permite explorar el TCL.
+
+\textbf{$N$: número de lanzamientos.} Aumenta las observaciones del histograma y suele reducir sus irregularidades relativas. Aumentar $N$ manteniendo $n=2$ no convierte la distribución de dos dados en normal.
+\end{nota}
+
+\clearpage\section{Cómo interpretar y comparar resultados}
+\subsection{Frecuencias, escala y aproximación normal}
+Las alturas de las barras representan frecuencias absolutas sobre una escala vertical ajustada por la aplicación. No deben compararse alturas en píxeles entre ejecuciones como si compartieran la misma escala. Compara la forma, la posición horizontal y la dispersión teniendo en cuenta los valores de $n$ y $N$.
+
+La curva superpuesta es la densidad normal multiplicada por $N$, adecuada como referencia visual para clases de anchura uno:
+\[
+y(x)=\frac{N}{\sigma\sqrt{2\pi}}\exp\!\left[-\frac12\left(\frac{x-\mu}{\sigma}\right)^2\right].
+\]
+No es una curva ajustada a los datos. Una densidad en un punto no es una probabilidad. Para aproximar una probabilidad discreta $P(S_n=k)$ puede emplearse, como ampliación, el área normal entre $k-0{,}5$ y $k+0{,}5$ (corrección de continuidad). La interfaz no calcula esa área.
+
+\subsection{Ejemplo de comprobación}
+Para 16 dados sesgados,
+\[
+\mu=16\cdot\frac{13}{3}=\frac{208}{3}\simeq69{,}33,
+\qquad \sigma=\sqrt{16\cdot\frac{20}{9}}\simeq5{,}96.
+\]
+Estos son los parámetros de la figura 1. Repetir la simulación cambia los resultados empíricos, pero conserva dichos parámetros. La suma de las frecuencias es $N$, no $nN$.
+
+\subsection{Repetir o cambiar de configuración}
+\begin{itemize}
+\item Pulsa de nuevo \textbf{Simular} para generar otra muestra con los mismos ajustes. Cada ejecución comienza un histograma nuevo; no acumula los anteriores.
+\item Cambiar distribución, dados o lanzamientos borra el resultado previo. En la versión web también cancela una animación en curso.
+\item Antes de cambiar los controles, registra las observaciones o guarda una captura con los medios habituales de tu equipo. La interfaz no incorpora exportación de datos ni selector de semilla aleatoria.
+\end{itemize}
+
+\begin{nota}{Errores frecuentes que conviene evitar}
+La distribución de un dado no se vuelve normal al repetir lanzamientos. Tampoco todas las sumas tienen la misma probabilidad. Al aumentar $n$, la desviación típica de la \emph{suma} crece como $\sqrt n$; la de la \emph{media} $S_n/n$ disminuye como $1/\sqrt n$. Una aparente concentración en un eje que cambia de amplitud no implica que la desviación de la suma disminuya.
+\end{nota}
+
+\clearpage\section{Actividades de exploración}
+\subsection{Objetivos de aprendizaje}
+Al finalizar la secuencia se espera que el estudiante pueda:
+\begin{enumerate}[label=O\arabic*.]
+\item Distinguir una distribución teórica de un histograma de frecuencias.
+\item Diferenciar el efecto de $N$ y el de $n$.
+\item Calcular la media y la desviación típica de la suma de dados independientes.
+\item Interpretar la aproximación normal y explicar sus limitaciones.
+\item Formular una predicción, contrastarla mediante simulación y justificar una conclusión.
+\end{enumerate}
+
+\subsection{Actividad 1. Más observaciones no significa normalidad}
+\textbf{Configuración:} Uniforme, $n=2$; realizar $N=100$, $1000$ y $5000$ lanzamientos. Repetir una configuración para observar variabilidad.
+
+\textbf{Preguntas.} ¿Qué sumas son más frecuentes? ¿Qué cambia al aumentar $N$? ¿Por qué no desaparece la forma triangular? Formula una predicción antes de pulsar Simular.
+
+\textbf{Orientación docente.} Las probabilidades exactas de las sumas $2,3,\ldots,12$ son proporcionales a $1,2,3,4,5,6,5,4,3,2,1$. Más repeticiones permiten apreciar mejor esta forma; no cambian la distribución subyacente.
+
+\subsection{Actividad 2. El papel del número de dados}
+\textbf{Configuración:} Sesgada, $N=5000$; comparar $n=2,6,10,16$.
+
+\textbf{Preguntas.} ¿Cómo evolucionan la asimetría y el parecido con la curva amarilla? ¿Se desplaza el centro? Calcula $\mu$ y $\sigma$ para $n=2$ y $n=16$ y contrástalos con la pantalla.
+
+\textbf{Orientación docente.} Para $n=2$, $\mu\simeq8{,}67$ y $\sigma\simeq2{,}11$; para $n=16$, $\mu\simeq69{,}33$ y $\sigma\simeq5{,}96$. Debe distinguirse el desplazamiento y ensanchamiento de la suma de su mayor parecido con una normal.
+
+\subsection{Actividad 3. Igual media, distinta dispersión}
+\textbf{Configuración:} $n=10$, $N=5000$; comparar Uniforme y En V.
+
+\textbf{Preguntas.} ¿Dónde se sitúa el centro? ¿Cuál es más dispersa? Explica el resultado a partir del diagrama azul, antes de mirar los parámetros.
+
+\textbf{Orientación docente.} Ambas sumas tienen media 35. Las desviaciones típicas son aproximadamente $5{,}40$ y $6{,}26$, respectivamente. En V concentra mayor probabilidad lejos del centro, por lo que tiene mayor varianza.
+
+\subsection{Actividad 4. Transferencia y límites}
+Explica qué ocurriría si todos los dados de una tirada mostrasen siempre el mismo resultado. En ese caso $S_n=nX$: la independencia del modelo dejaría de cumplirse. Compara $\operatorname{Var}(nX)=n^2\sigma_X^2$ con la varianza del simulador. Esta situación se discute en papel; no es una opción de la interfaz.
+
+\clearpage\section{Hoja de trabajo y orientaciones docentes}
+\textbf{Nombre o grupo:} \hrulefill\quad\textbf{Fecha:} \hrulefill
+
+\textbf{Predicción inicial.} ¿Qué diferencia esperas entre aumentar $N$ y aumentar $n$?\par
+\rule{\linewidth}{.2pt}\par\vspace{6mm}\rule{\linewidth}{.2pt}
+
+\begin{tabularx}{\textwidth}{@{}p{23mm}p{9mm}p{13mm}p{13mm}p{13mm}Y@{}}\toprule
+Distribución & $n$ & $N$ & $\mu$ & $\sigma$ & Forma y observaciones\\\midrule
+\rule{0pt}{15mm} & & & & &\\\midrule
+\rule{0pt}{15mm} & & & & &\\\midrule
+\rule{0pt}{15mm} & & & & &\\\midrule
+\rule{0pt}{15mm} & & & & &\\\bottomrule
+\end{tabularx}
+
+\textbf{Conclusión.} Describe una observación que apoye tu predicción y otra que te haya hecho revisarla. Explica por qué la simulación ilustra el TCL, pero no lo demuestra.\par
+\rule{\linewidth}{.2pt}\par\vspace{6mm}\rule{\linewidth}{.2pt}
+
+\subsection{Propuesta de sesión de 50 minutos}
+\begin{tabularx}{\textwidth}{@{}p{23mm}Y@{}}\toprule
+5 minutos & Pregunta inicial y explicación de la diferencia entre $n$ y $N$.\\
+20 minutos & Actividades 1--3 en parejas, alternando manejo y registro.\\
+15 minutos & Puesta en común y justificación con medias, varianzas e independencia.\\
+10 minutos & Actividad de transferencia y conclusión individual.\\\bottomrule
+\end{tabularx}
+
+\subsection{Evidencias de aprendizaje}
+Valorar la explicación de $n$ y $N$ (O2), el cálculo y significado de los parámetros (O3) y la interpretación justificada del histograma y la curva (O1, O4, O5). Para cada criterio puede emplearse una escala de 0 a 2: 0, explicación incorrecta o ausente; 1, parcialmente correcta; 2, correcta y justificada. Es una propuesta formativa, no un instrumento validado.
+
+El profesorado puede conservar, de forma anonimizada, las respuestas iniciales y finales, las hojas de trabajo y las incidencias. Para documentar una aplicación docente real conviene registrar asignatura, curso, fecha, grupo, duración y versión utilizada. Esta guía no atribuye al recurso mejoras de aprendizaje aún no evaluadas.
+
+\clearpage\section{Incidencias y condiciones de uso}
+\begin{tabularx}{\textwidth}{@{}p{43mm}Y@{}}\toprule
+\textbf{Situación} & \textbf{Qué hacer}\\\midrule
+La página carga, pero el simulador no aparece & Probar el enlace a la ventana independiente. Si funciona, comunicar una incidencia de inserción en WordPress al responsable del sitio.\\
+Faltan zonas de la pantalla & Ampliar la ventana, desplazarse por la página o abrir la vista independiente. Para comparar gráficos se recomienda un ordenador.\\
+El progreso avanza a saltos & Es el funcionamiento previsto de la actualización por lotes: no se omiten datos del histograma.\\
+Los resultados difieren de los de otro estudiante & Es normal: las muestras se generan aleatoriamente en cada ejecución. Comparar patrones, no exigir barras idénticas.\\
+La curva no coincide con las barras & Es una aproximación teórica; la muestra es finita y la distribución de la suma sigue siendo discreta.\\
+El gráfico desaparece al cambiar un ajuste & El resultado se reinicia para evitar mezclar configuraciones. Pulsar Simular con los nuevos valores.\\
+Simular está desactivado durante la animación & Esperar a que termine. En la web, cambiar un ajuste cancela la ejecución.\\\bottomrule
+\end{tabularx}
+
+\subsection{Accesibilidad y alternativas}
+La versión web contiene etiquetas para los controles, descripciones de los dados y textos asociados a los gráficos. Sin embargo, esto no equivale a una auditoría completa de accesibilidad. Antes de una sesión conviene comprobar la legibilidad, la navegación con teclado y las necesidades concretas del alumnado.
+
+No debe evaluarse el aprendizaje por la rapidez de interacción ni solo por el reconocimiento de colores. El profesorado puede verbalizar los resultados, facilitar la tabla de probabilidades y utilizar las actividades de esta guía en papel. En un trabajo por parejas deben alternarse los roles para que ambas personas interpreten los resultados.
+
+\subsection{Registro de resultados}
+El simulador no ofrece cuentas de estudiante, historial de sesiones, calificaciones ni descarga de las tiradas. El registro de observaciones se realiza con la hoja de trabajo o con un documento externo. No es necesario introducir datos personales para simular. La política de cookies y privacidad del portal que aloja la página se consulta en ese portal.
+
+\begin{nota}{Uso sin conexión}
+La ruta ordinaria es la página pública de AUREA. Para trabajar sin conexión puede utilizarse la aplicación local descrita en la parte II, una vez instalado su entorno. La instalación inicial de las dependencias sí requiere disponer de ellas o descargarlas previamente.
+\end{nota}
+
+\clearpage\part{Guía del proyecto local en ManimGL}
+\section{Finalidad y organización de los archivos}
+Esta implementación utiliza \textbf{Python y ManimGL 1.7.2}. Presenta una ventana gráfica independiente del navegador y conserva la lógica visual de la beta: distribución de un dado, selección de parámetros, dados, progreso, histograma de sumas y referencia normal.
+
+\textbf{ManimGL no es Manim Community.} El código importa \texttt{manimlib} y se ejecuta con \texttt{manimgl}. Instalar solamente el paquete \texttt{manim} no proporciona este entorno.
+
+El repositorio del proyecto es \url{https://github.com/AUREAUPM/AUREA}. Su carpeta existente \texttt{ManimGL} recoge el trabajo de Iván. Para distinguir ambos desarrollos, esta edición prepara una carpeta independiente \texttt{TCL\_ManimGL}, al mismo nivel, con los módulos de la beta de David Fernández Álvarez. La incorporación de esta nueva carpeta al repositorio queda pendiente de publicación.
+
+\begin{lstlisting}
+AUREA/
+  ManimGL/               (trabajo previo de Ivan)
+  TCL_ManimGL/           (este recurso)
+    dados.py
+    panel_controles.py
+    panel_dados.py
+    panel_distribucion.py
+    panel_distribuciones.py
+    distribucion.py
+    dado.py
+    boton.py
+    slider.py
+    histograma.py
+    requirements.txt
+    README.md
+    MANIFIESTO_SHA256.txt
+    documentacion/
+      guia_usuario_tcl.tex
+      guia_usuario_tcl.pdf
+      recursos/simulador-web.png
+\end{lstlisting}
+
+\texttt{dados.py} contiene la escena principal, \texttt{DemoInterfaz}. Todos los módulos Python deben conservarse juntos: la escena importa los demás archivos por sus nombres. El manifiesto identifica la copia de los diez módulos mediante sus huellas SHA-256.
+
+No se distribuye la carpeta de entorno virtual \texttt{manim\_env}, ni cachés, ni ensayos antiguos. El entorno se crea en cada equipo. Los archivos históricos de la carpeta local original se conservan allí; esta carpeta prepara los módulos necesarios para ejecutar la beta descrita.
+
+\clearpage\section{Instalación y puesta en marcha}
+\subsection{Preparación}
+El entorno local de referencia contiene Python 3.11.15 y ManimGL 1.7.2. Se recomienda reproducir inicialmente la rama Python 3.11. ManimGL utiliza OpenGL y requiere un equipo con entorno gráfico compatible. La documentación oficial detalla los requisitos del sistema, incluido FFmpeg y, según la plataforma, componentes de texto como Pango:
+\url{https://3b1b.github.io/manim/getting_started/installation.html}.
+
+Los módulos de este simulador utilizan \texttt{Text} para sus etiquetas. LaTeX se necesita para compilar esta guía, y para escenas que utilicen fórmulas renderizadas con LaTeX; no debe confundirse con el lenguaje de programación del simulador.
+
+\subsection{Crear un entorno en macOS o Linux}
+Abre una terminal dentro de \texttt{TCL\_ManimGL}. Con Python 3.11 instalado, ejecuta:
+\begin{lstlisting}
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+manimgl dados.py DemoInterfaz
+\end{lstlisting}
+
+\subsection{Crear un entorno en Windows}
+En una terminal de comandos (\texttt{cmd}) situada en la misma carpeta:
+\begin{lstlisting}
+py -3.11 -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -r requirements.txt
+manimgl dados.py DemoInterfaz
+\end{lstlisting}
+
+Estos comandos describen la preparación del entorno y la escena identificada en el código. Las dependencias nativas deben estar disponibles previamente. No se ha verificado en esta edición una instalación nueva en todos los sistemas operativos.
+
+\subsection{Si ya existe un entorno que funciona}
+Activa ese entorno y, desde la carpeta que contiene los módulos, ejecuta \texttt{manimgl dados.py DemoInterfaz}. No es necesario reinstalarlo para cada uso. Para cerrar la aplicación, cierra la ventana o utiliza la tecla \texttt{q} cuando la ventana tenga el foco.
+
+\begin{nota}{Comprobación inicial}
+Comprueba que aparecen los controles, selecciona Uniforme, 2 dados y 100 lanzamientos, y pulsa Simular. Al terminar deben verse el histograma verde y los parámetros aproximados $\mu=7{,}00$ y $\sigma=2{,}42$. Si la ventana no llega a abrirse, revisa primero la instalación; si faltan módulos, revisa la carpeta de trabajo.
+\end{nota}
+
+\clearpage\section{Manejo y diferencias respecto de la web}
+\begin{enumerate}
+\item Selecciona \textbf{Uniforme}, \textbf{Sesgada} o \textbf{En V}. En esta beta el panel de distribución puede estar vacío al abrir la ventana. Selecciona una opción para mostrarlo; si simulas sin haberla elegido, el programa utiliza Uniforme.
+\item Selecciona \textbf{2}, \textbf{6}, \textbf{10} o \textbf{16} dados. Si no se ha hecho una selección, se emplean 2.
+\item Haz clic sobre la línea del deslizador o arrástralo para elegir el número de lanzamientos. El valor inicial de esta beta es 10.
+\item Pulsa \textbf{Simular} y espera al final. Durante la ejecución no se aceptan nuevas pulsaciones sobre los controles de configuración.
+\item Examina el histograma y la curva normal. Cambia un ajuste o pulsa Simular para empezar otra ejecución.
+\end{enumerate}
+
+La interpretación matemática y las actividades de la parte I también se aplican a ManimGL. Las sumas se generan con \texttt{numpy.random.choice}, usando las probabilidades seleccionadas. La presentación se actualiza por lotes y representa los dados de la última tirada del lote, aunque todas las sumas se incorporan al histograma.
+
+\begin{tabularx}{\textwidth}{@{}p{34mm}Y Y@{}}\toprule
+\textbf{Aspecto} & \textbf{Web} & \textbf{Beta ManimGL}\\\midrule
+Ejecución & Navegador; sin instalar Python. & Ventana OpenGL y entorno Python.\\
+Lanzamientos iniciales & 1000. & 10.\\
+Distribución inicial & Uniforme ya visible. & Se muestra al elegirla o al iniciar la primera simulación.\\
+Cambio durante una simulación & Cancela la animación y reinicia el resultado. & Los clics de configuración se ignoran mientras se simula.\\
+Indicadores por cara & Diagrama azul sin flechas de la tirada. & Flechas sobre las caras para indicar sus apariciones en la tirada mostrada.\\
+Adaptación de pantalla & Distribución de elementos adaptable al ancho. & Composición con posiciones fijadas en la escena.\\
+Actualización visual & Lotes calculados a partir de $N$. & Lotes de 5, 10, 20 o 75, según $N$.\\\bottomrule
+\end{tabularx}
+
+Las versiones comparten el modelo probabilístico, las opciones y el propósito didáctico, pero no son idénticas en cada detalle de interacción. Tampoco generan la misma secuencia aleatoria. Las escalas gráficas se ajustan y pueden diferir entre versiones.
+
+\clearpage\section{Módulos, adaptación y resolución de incidencias}
+\begin{tabularx}{\textwidth}{@{}p{49mm}Y@{}}\toprule
+\textbf{Archivo} & \textbf{Responsabilidad}\\\midrule
+\texttt{dados.py} & Escena \texttt{DemoInterfaz}, eventos de ratón, simulación, progreso y parámetros teóricos.\\
+\texttt{distribucion.py} & Probabilidades de las tres distribuciones, barras e indicadores de caras.\\
+\texttt{histograma.py} & Acumulación de sumas y construcción de la curva normal.\\
+\texttt{dado.py}, \texttt{panel\_dados.py} & Dibujo de un dado y organización de los grupos.\\
+\texttt{boton.py}, \texttt{slider.py} & Botones, selección de opciones y deslizador.\\
+\texttt{panel\_controles.py} & Selección del número de dados.\\
+\texttt{panel\_distribucion.py} & Presentación del diagrama de probabilidades.\\
+\texttt{panel\_distribuciones.py} & Botones para elegir la distribución.\\\bottomrule
+\end{tabularx}
+
+\subsection{Pautas para adaptar el recurso}
+Trabaja sobre una copia y registra la versión. Si modificas probabilidades, comprueba que son no negativas y suman uno, y actualiza la tabla de esta guía. Verifica de nuevo la media y la varianza. Si cambias el número de dados, revisa también la disposición del panel, los botones y el rango de sumas.
+
+La beta no ofrece un control de semilla en la interfaz. Para una reproducción exacta de las tiradas en una adaptación de Python, el desarrollador puede fijar una semilla antes de generarlas y documentar las versiones del entorno. Debe diferenciar esta modalidad del uso ordinario, en el que se generan muestras nuevas. No debe esperarse igualdad de muestras entre NumPy y JavaScript por usar un mismo número como semilla.
+
+\subsection{Incidencias habituales}
+\begin{description}[style=nextline,font=\bfseries\color{azul}]
+\item[No se encuentra \texttt{manimgl} o \texttt{manimlib}.]
+Activa el entorno en el que se instaló ManimGL y comprueba \texttt{python -m pip show manimgl}. Verifica que no se ha instalado únicamente Manim Community.
+\item[No se encuentra un módulo del proyecto.]
+Ejecuta la escena desde la carpeta que contiene los diez archivos Python, conservando sus nombres.
+\item[Error gráfico o ventana que no abre.]
+Revisa el mensaje de la terminal, la compatibilidad OpenGL y los requisitos oficiales. Si no puede resolverse antes de una clase, utiliza la versión web.
+\item[Los controles no responden mientras se simula.]
+Es el comportamiento de la beta: espera a que termine. Una pausa de actualización no significa que se hayan perdido observaciones.
+\item[El texto o la composición se ven diferentes.]
+Comprueba el tamaño de la ventana, las fuentes disponibles y la versión de ManimGL. Conserva el entorno de referencia para comparar.
+\end{description}
+
+\clearpage\section{Autoría, reutilización y conservación}
+\subsection{Autoría y reconocimiento}
+El autor de este recurso y de esta guía es \textbf{David Fernández Álvarez}, Universidad Politécnica de Madrid. Contacto: \href{mailto:david.fernandezalv@upm.es}{david.fernandezalv@upm.es}. ORCID: \href{https://orcid.org/0000-0002-4717-0985}{0000-0002-4717-0985}.
+
+Se reconoce el trabajo de \textbf{Iván} en las escenas conservadas en la carpeta \texttt{ManimGL} del repositorio AUREA. Esta edición documenta por separado la beta local \texttt{TCL\_ManimGL} y su versión web. \textbf{Pendiente editorial:} completar el nombre de Iván y precisar, con el autor, la relación concreta entre aquellas escenas y este desarrollo antes de publicar la edición definitiva.
+
+La guía se ha compuesto en LaTeX con asistencia de IA para su preparación y revisión. La responsabilidad académica y la aprobación de la edición corresponden al autor. La figura reproduce una ejecución de la aplicación web consultada el 6 de noviembre de 2026.
+
+\subsection{Licencia y cita}
+\textbf{Propuesta pendiente de confirmación:} Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0) para la guía. Permite compartir y adaptar el material para usos no comerciales, reconociendo la autoría, enlazando la licencia e indicando cambios. Véanse las condiciones en \url{https://creativecommons.org/licenses/by-nc/4.0/deed.es}.
+
+La licencia de esta guía no asigna una licencia al código ni modifica la de ManimGL, otras dependencias o las contribuciones de otros autores. Las condiciones del código de este recurso deben fijarse por separado antes de su publicación como software reutilizable.
+
+\begin{nota}{Cita propuesta: completar tras el depósito}
+Fernández Álvarez, D. (2026). \emph{Explicación intuitiva del Teorema Central del Límite: guía de usuario del simulador en línea y del proyecto en ManimGL} (versión definitiva pendiente). Universidad Politécnica de Madrid. [DOI pendiente].
+\end{nota}
+
+\subsection{Conservar una edición identificable}
+La página web puede evolucionar. Para que esta guía siga siendo interpretable conviene conservar junto a la edición publicada una copia identificable de los módulos, las dependencias, la aplicación web y sus fuentes. Una etiqueta de versión o un identificador de revisión del repositorio permite relacionar el documento con el software descrito.
+
+El depósito previsto es el Archivo Digital UPM. El DOI y la dirección de la ficha se incorporarán cuando los confirme el servicio responsable. Hasta entonces, este documento es un borrador de trabajo y no declara un depósito ya realizado.
+
+\subsection{Enlaces de consulta}
+\begin{itemize}
+\item Recurso en línea: \web.
+\item Repositorio AUREA: \url{https://github.com/AUREAUPM/AUREA}.
+\item ManimGL, instalación y uso: \url{https://3b1b.github.io/manim/}.
+\item Archivo Digital UPM: \url{https://oa.upm.es/}.
+\end{itemize}
+\end{document}
