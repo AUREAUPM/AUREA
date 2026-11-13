@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Exploración interactiva del Teorema Central del Límite con dados. Un recurso educativo del proyecto AUREA de la Universidad Politécnica de Madrid." />
+    <title>Explicación intuitiva del Teorema Central del Límite · AUREA</title>
+    
+    <style>:root{--color-observation:#d7ff00;--color-accumulated:#7bc96f;--color-normal:#ffe45c;color:#fff;--lightningcss-light: ;--lightningcss-dark:initial;color-scheme:dark;font-synthesis:none;text-rendering:optimizelegibility;-webkit-font-smoothing:antialiased;background:#000;font-family:Arial,Helvetica,sans-serif}*{box-sizing:border-box}body{min-width:320px;margin:0}#app{max-width:1440px;min-height:100svh;margin:auto;padding:52px 36px 24px}.controls{grid-template-columns:1.4fr .85fr 1.2fr auto;align-items:start;gap:32px;display:grid}fieldset{border:0;min-width:0;margin:0;padding:0}legend{text-align:center;width:100%;margin-bottom:20px;padding:0;font-size:20px}.buttons{gap:10px;display:flex}button{font:inherit;color:#fff;background:#29abca;border:2px solid #fff;border-radius:8px;min-height:49px;padding:8px 13px;font-size:20px}button:disabled{opacity:1;cursor:default}.buttons button{flex:1}button[aria-pressed=true]{color:#1f1f1f;background:#d9a066}.simulate{margin-top:43px}.launches{gap:6px;display:grid}output{text-align:center;font-size:21px}input[type=range]{accent-color:#58c4dd;width:100%;margin:0}.limits{color:#aaa;justify-content:space-between;font-size:13px;display:flex}#stage-note{text-align:center;color:#999;margin:38px 0 0;font-size:13px}.sr-only{clip-path:inset(50%);white-space:nowrap;width:1px;height:1px;padding:0;position:absolute;overflow:hidden}.scene{grid-template-columns:1fr 1fr;align-items:center;min-height:230px;display:grid}.dice-area{grid-column:2;min-width:0;position:relative}.dice-panel{grid-template-columns:repeat(var(--columns,2), minmax(0, 42px));justify-content:center;align-items:center;gap:clamp(6px,1.2vw,18px);min-width:0;display:grid}.die{aspect-ratio:1;width:100%;height:auto;display:block}.die rect{fill:#1f1f1f;stroke:#fff;stroke-width:3px}.die circle{fill:#fff}@media (width<=1100px){.controls{grid-template-columns:1fr 1fr;gap:32px}.scene{grid-template-columns:1fr;min-height:200px}.dice-area{grid-column:1}.simulate{justify-self:center;min-width:140px;margin-top:43px}}@media (width<=600px){#app{padding:30px 20px}.controls{grid-template-columns:1fr;gap:28px}legend{margin-bottom:14px;font-size:20px}.simulate{width:100%;margin-top:0}}.simulate{color:#fff;background:#77b05d;border-width:3px}button:enabled{cursor:pointer}button:focus-visible{outline-offset:5px;outline:3px solid #fff}.distribution-panel{grid-area:1/1;justify-self:center;width:min(100%,400px);padding-top:24px}.distribution-chart{width:100%;height:auto;display:block}.distribution-caption{text-align:center;margin:0;font-size:18px}@media (width>=1101px){.dice-area{grid-row:1}}@media (width<=1100px){.scene{row-gap:28px;padding-bottom:20px}}@media (width>=1101px){#app{--control-columns:1.4fr .85fr 1.2fr auto}.controls{grid-template-columns:subgrid;grid-column:1/-1}#app{grid-template-columns:var(--control-columns);align-content:start;column-gap:32px;display:grid}.scene{grid-column:1/-1;grid-template-columns:subgrid}.distribution-panel{grid-column:1}.dice-area{grid-column:3}#stage-note{grid-column:1/-1}}@media (width>=601px) and (width<=1100px){.scene{grid-template-columns:1fr 1fr;column-gap:32px}.distribution-panel{grid-column:1}.dice-area{grid-area:1/2}}.run-readout{white-space:nowrap;justify-content:center;gap:24px;width:100%;margin-top:20px;font-size:16px;display:flex;position:absolute;top:100%;left:0}.run-readout[hidden]{display:none}.run-readout strong{font-variant-numeric:tabular-nums;margin-left:4px;font-weight:400}#sum{color:var(--color-observation)}.sum-histogram{grid-column:1/-1;width:min(100%,840px);margin:10px auto 0}.sum-histogram[hidden]{display:none}.sum-histogram svg{width:100%;height:auto;display:block}.sum-histogram p{text-align:center;margin:0;font-size:18px}.simulate{white-space:nowrap;width:160px}.controls legend,.controls button,.controls output,.controls .limits{font-weight:700}.launches{align-items:center;height:49px;display:flex;position:relative}.launches output{font-size:18px;line-height:20px;position:absolute;top:-7px;left:0;right:0}.launches input[type=range]{height:16px}.launches .limits{position:absolute;top:36px;left:0;right:0}html{scrollbar-gutter:stable}@media (width<=600px){.simulate{width:100%}}@media (width<=1100px){.dice-area{margin-bottom:44px}}.sum-histogram{padding-bottom:64px;position:relative}.normal-curve{animation:.8s both reveal-normal}.normal-parameters{width:100%;min-height:44px;color:var(--color-normal);flex-wrap:wrap;justify-content:center;gap:8px 24px;font-size:16px;animation:.6s .8s both reveal-normal;display:flex;position:absolute;bottom:0;left:0}@keyframes reveal-normal{0%{opacity:0}to{opacity:1}}@media (prefers-reduced-motion:reduce){.normal-curve,.normal-parameters{animation:none}}.sum-histogram{width:min(100%,1080px);padding-bottom:0;padding-right:240px}.normal-parameters{flex-flow:column;justify-content:center;align-items:flex-start;gap:10px;width:220px;height:calc(100% - 22px);font-size:18px;display:flex;inset:0 0 auto auto}.normal-parameters span:not(:first-child){padding-left:24px}@media (width<=600px){.sum-histogram{padding-right:140px}.normal-parameters{gap:6px;width:128px;font-size:13px}.normal-parameters span:not(:first-child){padding-left:12px}}.project-credit{text-align:center;color:#a3a3a3;text-wrap:balance;border-top:1px solid #292929;grid-column:1/-1;margin-top:42px;padding:18px 12px 4px;font-size:12px;line-height:1.65}.project-credit p{margin:0}.project-credit p+p{margin-top:3px}.project-credit .project-name{color:#c2c2c2}.sum-histogram[hidden]{visibility:hidden;display:block}.sum-histogram:before{content:"";aspect-ratio:840/270;width:100%;display:block}.sum-histogram:not([hidden]):before{display:none}.sum-histogram[hidden]:after{content:"";height:22px;display:block}.sum-histogram>p{line-height:22px}#stage-note{min-height:36px;line-height:18px}.project-credit{border-top-color:#555}.resource-header{border-bottom:1px solid #414141;grid-column:1/-1;margin-bottom:36px;padding-bottom:26px}.embedded .resource-header{display:none}.embedded #app{min-height:0;padding-top:32px}.resource-identity{color:#b5b5b5;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px 24px;font-size:12px;line-height:1.6;display:flex}.resource-identity a{color:#b5b5b5;text-underline-offset:4px;text-decoration:underline}.resource-identity a:hover{color:#fff}.resource-identity a:focus-visible{outline-offset:5px;outline:2px solid #58c4dd}.resource-header h1{text-wrap:balance;max-width:1050px;margin:24px 0 12px;font-size:clamp(25px,2.5vw,36px);font-weight:600;line-height:1.2}.resource-header>p{color:#b5b5b5;max-width:850px;margin:0;font-size:16px;line-height:1.6}@media (width<=600px){.resource-header{margin-bottom:28px;padding-bottom:22px}.resource-header h1{margin-top:20px}.resource-header>p{font-size:14px}}
+</style>
+  </head>
+  <body>
+    <main id="app"></main>
+  <script type="module">(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})(),document.documentElement.classList.toggle(`embedded`,new URLSearchParams(window.location.search).get(`embed`)===`1`);var e=document.querySelector(`#app`);if(!e)throw Error(`No se encuentra el contenedor de la página.`);e.innerHTML=`
+  <header class="resource-header">
+    <div class="resource-identity"><span>Proyecto AUREA · Universidad Politécnica de Madrid</span><a href="https://blogs.upm.es/pie-aurea/">Web del proyecto <span aria-hidden="true">↗</span></a></div>
+    <h1>Explicación intuitiva del Teorema Central del Límite</h1>
+    <p>Explora cómo cambia la distribución de la suma al aumentar el número de dados por lanzamiento.</p>
+  </header>
+  <section class="controls" aria-label="Configuración del simulador" aria-describedby="stage-note">
+    <fieldset>
+      <legend>Distribución de probabilidad</legend>
+      <div class="buttons distributions">
+        <button type="button" aria-pressed="true">Uniforme</button>
+        <button type="button" aria-pressed="false">Sesgada</button>
+        <button type="button" aria-pressed="false">En V</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Nº lanzamientos</legend>
+      <div class="launches">
+        <output for="launches">1000</output>
+        <input id="launches" aria-label="Número de lanzamientos" type="range" min="0" max="50" step="1" value="10" aria-valuetext="1000 lanzamientos" />
+        <div class="limits"><span>10</span><span>5000</span></div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Dados por lanzamiento</legend>
+      <div class="buttons dice">
+        <button type="button" aria-pressed="true">2</button>
+        <button type="button" aria-pressed="false">6</button>
+        <button type="button" aria-pressed="false">10</button>
+        <button type="button" aria-pressed="false">16</button>
+      </div>
+    </fieldset>
+    <button class="simulate" type="button">Simular</button>
+  </section>
+  <section class="scene" aria-label="Distribución y dados">
+    <div class="distribution-panel" aria-live="polite"></div>
+    <div class="dice-area">
+      <div class="dice-panel"></div>
+      <div class="run-readout" hidden><span>Progreso: <strong id="progress"></strong></span><span>Suma: <strong id="sum"></strong></span></div>
+    </div>
+  </section>
+  <section class="sum-histogram" hidden aria-label="Distribución de la suma"></section>
+  <p id="stage-note" role="status">Configura los controles y pulsa Simular.</p>
+  <footer class="project-credit" aria-label="Créditos del proyecto">
+    <p>Recurso realizado en el marco del proyecto <span class="project-name">AUREA: Aprendizaje y Uso del Razonamiento Estadístico y la Aleatoriedad (IE26.0405)</span></p>
+    <p>Proyecto de Innovación Educativa financiado por la Universidad Politécnica de Madrid</p>
+  </footer>
+`;var t={1:[[50,50]],2:[[26,74],[74,26]],3:[[26,74],[50,50],[74,26]],4:[[26,26],[26,74],[74,26],[74,74]],5:[[26,26],[26,74],[50,50],[74,26],[74,74]],6:[[26,26],[26,50],[26,74],[74,26],[74,50],[74,74]]},n=[3,5,1,6,2,4,5,3,6,1,4,2,3,6,5,2],r=e.querySelector(`.dice-panel`),i=e.querySelectorAll(`.dice button`);function a(e,a=n.slice(0,e)){r.style.setProperty(`--columns`,String(e===2?2:e/2)),r.innerHTML=a.map(e=>`
+    <svg class="die" viewBox="0 0 100 100" role="img" aria-label="Dado con valor ${e}">
+      <rect x="3" y="3" width="94" height="94" rx="16" />
+      ${t[e].map(([e,t])=>`<circle cx="${e}" cy="${t}" r="6" />`).join(``)}
+    </svg>
+  `).join(``),i.forEach(t=>{t.setAttribute(`aria-pressed`,String(Number(t.textContent)===e))})}i.forEach(e=>{e.addEventListener(`click`,()=>a(Number(e.textContent)))}),a(2);var o=[{name:`Uniforme`,weights:[1,1,1,1,1,1],maximum:`1/6`},{name:`Sesgada`,weights:[1,2,3,4,5,6],maximum:`0,29`},{name:`En V`,weights:[3,2,1,1,2,3],maximum:`1/4`}],s=e.querySelector(`.distribution-panel`),c=e.querySelectorAll(`.distributions button`);function l(e){let n=o[e],r=Math.max(...n.weights),i=n.weights.reduce((e,t)=>e+t,0);s.innerHTML=`
+    <svg class="distribution-chart" viewBox="0 0 434 170" role="img" aria-label="Distribución ${n.name}">
+      <title>Distribución ${n.name}</title>
+      <desc>${n.weights.map((e,t)=>`Cara ${t+1}: ${e}/${i}`).join(`; `)}</desc>
+      <path d="M 42 22 V 112 H 392 M 38 22 H 46" fill="none" stroke="#d8d8d8" stroke-width="1.6" />
+      <text x="33" y="26" text-anchor="end" fill="#d8d8d8" font-size="14">${n.maximum}</text>
+      ${n.weights.map((e,n)=>{let i=84+n*56,a=90*e/r,o=n+1;return`<rect x="${i-24}" y="${112-a}" width="48" height="${a}" fill="#2d9cdb" fill-opacity="0.9" />
+          <svg x="${i-12}" y="130" width="24" height="24" viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="3" y="3" width="94" height="94" rx="16" fill="#1f1f1f" stroke="white" stroke-width="3" />
+            ${t[o].map(([e,t])=>`<circle cx="${e}" cy="${t}" r="6" fill="white" />`).join(``)}
+          </svg>`}).join(``)}
+    </svg>
+    <p class="distribution-caption">Distribución de un dado</p>
+  `,c.forEach((t,n)=>t.setAttribute(`aria-pressed`,String(n===e)))}c.forEach((e,t)=>e.addEventListener(`click`,()=>l(t))),l(0);var u=[10,...Array.from({length:50},(e,t)=>(t+1)*100)],d=e.querySelector(`#launches`),f=e.querySelector(`output[for="launches"]`);function p(){let e=u[Number(d.value)];f.value=String(e),d.setAttribute(`aria-valuetext`,`${e} lanzamientos`)}d.addEventListener(`input`,p),p();var m=e.querySelector(`.simulate`),h=e.querySelector(`.run-readout`),g=e.querySelector(`#progress`),_=e.querySelector(`#sum`),v=e.querySelector(`#stage-note`),y=e.querySelector(`.sum-histogram`),b;function x(){clearTimeout(b),b=void 0,m.disabled=!1,m.textContent=`Simular`,h.hidden=!0,y.hidden=!0,y.replaceChildren(),v.textContent=`Configura los controles y pulsa Simular.`;let e=[...i].find(e=>e.getAttribute(`aria-pressed`)===`true`);a(Number(e.textContent))}[...i,...c].forEach(e=>e.addEventListener(`click`,x)),d.addEventListener(`input`,x),m.addEventListener(`click`,()=>{x();let e=Number([...i].find(e=>e.getAttribute(`aria-pressed`)===`true`).textContent),t=o[[...c].findIndex(e=>e.getAttribute(`aria-pressed`)===`true`)].weights,n=t.reduce((e,t)=>e+t,0),r=u[Number(d.value)];function s(){let e=Math.random()*n;for(let n=0;n<t.length;n++)if(e-=t[n],e<0)return n+1;return 6}let l=Array.from({length:r},()=>{let t=Array.from({length:e},s);return{values:t,sum:t.reduce((e,t)=>e+t,0)}}),f=Array(5*e+1).fill(0),p=Array(f.length).fill(0);l.forEach(t=>p[t.sum-e]++);let w=t.reduce((e,t,r)=>e+(r+1)*t/n,0),T=t.reduce((e,t,r)=>e+(r+1-w)**2*t/n,0),E=e*w,D=Math.sqrt(e*T),O=r/(D*Math.sqrt(2*Math.PI)),k=Math.min(12,200/Math.max(...p,O));y.hidden=!1;let A=Math.ceil(r/70),j=r===10?350:85,M=0;m.disabled=!0,m.textContent=`Simulando…`,h.hidden=!1,v.textContent=A===1?`Simulación en curso.`:`Simulación en curso · Se muestra la última tirada de cada lote.`;function N(){let t=Math.min(r,M+A);for(let n=M;n<t;n++)f[l[n].sum-e]++;M=t;let n=l[M-1];a(e,n.values),S(f,e,M<r?n.sum:null,k,M),g.textContent=`${M} / ${r}`,_.textContent=String(n.sum),M<r?b=setTimeout(N,j):(b=void 0,m.disabled=!1,m.textContent=`Simular`,C(e,r,E,D,k),v.textContent=`Simulación terminada · Los dados y la suma corresponden al último lanzamiento.`)}N()});function S(e,t,n,r,i){let a=800/e.length,o=e.length<=20?2:e.length<=50?5:10;y.innerHTML=`
+    <svg viewBox="0 0 840 270" role="img" aria-label="${i} lanzamientos acumulados.${n===null?` Simulación terminada.`:` Última suma: ${n}.`}">
+      <title>Distribución de la suma</title>
+      <desc>${e.map((e,n)=>`${t+n}: ${e}`).join(`; `)}</desc>
+      ${e.map((i,s)=>{let c=t+s,l=c===n,u=(i-+!!l)*r,d=20+(s+.5)*a,f=a*.82,p=Math.max(r,5),m=s===0||s===e.length-1||c%o===0;return`<g data-sum="${c}" data-frequency="${i}">
+          <rect x="${d-f/2}" y="${230-u}" width="${f}" height="${u}" fill="var(--color-accumulated)" />
+          ${l?`<rect class="active-observation" x="${d-f/2}" y="${230-u-p}" width="${f}" height="${p}" fill="var(--color-observation)" />`:``}
+          <path d="M ${d} 230 v 4" stroke="#d8d8d8" />
+          ${m?`<text x="${d}" y="253" text-anchor="middle" fill="#d8d8d8" font-size="14">${c}</text>`:``}
+        </g>`}).join(``)}
+      <path d="M 20 230 H 820" stroke="#d8d8d8" stroke-width="1.6" />
+    </svg>
+    <p>Distribución de la suma</p>
+  `}function C(e,t,n,r,i){let a=800/(5*e+1),o=Array.from({length:251},(o,s)=>{let c=e+5*e*s/250,l=Math.exp(-.5*((c-n)/r)**2)/(r*Math.sqrt(2*Math.PI)),u=20+(c-e+.5)*a,d=230-t*l*i;return`${s===0?`M`:`L`} ${u} ${d}`}).join(` `),s=document.createElementNS(`http://www.w3.org/2000/svg`,`path`);s.setAttribute(`d`,o),s.setAttribute(`class`,`normal-curve`),s.setAttribute(`fill`,`none`),s.setAttribute(`stroke`,`var(--color-normal)`),s.setAttribute(`stroke-width`,`3`),s.setAttribute(`aria-label`,`Aproximación normal teórica`),y.querySelector(`svg`).append(s);let c=document.createElement(`div`);c.className=`normal-parameters`,c.setAttribute(`aria-label`,`Parámetros teóricos de la suma`);let l=e=>e.toLocaleString(`es-ES`,{minimumFractionDigits:2,maximumFractionDigits:2});c.innerHTML=`<span>Aproximación normal</span><span>μ = ${l(n)}</span><span>σ = ${l(r)}</span>`,y.append(c)}</script></body>
+</html>

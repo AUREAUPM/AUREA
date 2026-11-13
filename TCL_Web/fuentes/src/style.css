@@ -1,0 +1,143 @@
+:root {
+  --color-observation: #d7ff00;
+  --color-accumulated: #7bc96f;
+  --color-normal: #ffe45c;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+  background: #000;
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+#app { max-width: 1440px; min-height: 100svh; margin: auto; padding: 52px 36px 24px; }
+.controls { display: grid; grid-template-columns: 1.4fr 0.85fr 1.2fr auto; gap: 32px; align-items: start; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+legend { width: 100%; text-align: center; font-size: 20px; margin-bottom: 20px; padding: 0; }
+.buttons { display: flex; gap: 10px; }
+button { font: inherit; font-size: 20px; color: #fff; background: #29abca; border: 2px solid #fff; border-radius: 8px; min-height: 49px; padding: 8px 13px; }
+button:disabled { opacity: 1; cursor: default; }
+.buttons button { flex: 1; }
+button[aria-pressed="true"] { background: #d9a066; color: #1f1f1f; }
+.simulate { margin-top: 43px; }
+.launches { display: grid; gap: 6px; }
+output { text-align: center; font-size: 21px; }
+input[type="range"] { width: 100%; margin: 0; accent-color: #58c4dd; }
+.limits { display: flex; justify-content: space-between; font-size: 13px; color: #aaa; }
+#stage-note { margin: 38px 0 0; text-align: center; color: #999; font-size: 13px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.scene { display: grid; grid-template-columns: 1fr 1fr; min-height: 230px; align-items: center; }
+.dice-area { grid-column: 2; min-width: 0; position: relative; }
+.dice-panel { display: grid; grid-template-columns: repeat(var(--columns, 2), minmax(0, 42px)); justify-content: center; align-items: center; gap: clamp(6px, 1.2vw, 18px); min-width: 0; }
+.die { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+.die rect { fill: #1f1f1f; stroke: #fff; stroke-width: 3; }
+.die circle { fill: #fff; }
+@media (max-width: 1100px) {
+  .controls { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .scene { grid-template-columns: 1fr; min-height: 200px; }
+  .dice-area { grid-column: 1; }
+  .simulate { margin-top: 43px; justify-self: center; min-width: 140px; }
+}
+@media (max-width: 600px) {
+  #app { padding: 30px 20px; }
+  .controls { grid-template-columns: 1fr; gap: 28px; }
+  legend { font-size: 20px; margin-bottom: 14px; }
+  .simulate { margin-top: 0; width: 100%; }
+}
+.simulate { background: #77b05d; color: #fff; border-width: 3px; }
+
+button:enabled { cursor: pointer; }
+button:focus-visible { outline: 3px solid #fff; outline-offset: 5px; }
+
+.distribution-panel { grid-column: 1; grid-row: 1; width: min(100%, 400px); justify-self: center; padding-top: 24px; }
+.distribution-chart { display: block; width: 100%; height: auto; }
+.distribution-caption { margin: 0; text-align: center; font-size: 18px; }
+@media (min-width: 1101px) { .dice-area { grid-row: 1; } }
+@media (max-width: 1100px) { .scene { row-gap: 28px; padding-bottom: 20px; } }
+/* Comparte las columnas de los controles para centrar la gráfica bajo Sesgada. */
+@media (min-width: 1101px) {
+  #app { --control-columns: 1.4fr 0.85fr 1.2fr auto; }
+  .controls { grid-template-columns: subgrid; grid-column: 1 / -1; }
+  #app { display: grid; grid-template-columns: var(--control-columns); column-gap: 32px; align-content: start; }
+  .scene { grid-column: 1 / -1; grid-template-columns: subgrid; }
+  .distribution-panel { grid-column: 1; }
+  .dice-area { grid-column: 3; }
+  #stage-note { grid-column: 1 / -1; }
+}
+@media (min-width: 601px) and (max-width: 1100px) {
+  .scene { grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  .distribution-panel { grid-column: 1; }
+  .dice-area { grid-column: 2; grid-row: 1; }
+}
+
+.run-readout { position: absolute; top: 100%; left: 0; width: 100%; display: flex; justify-content: center; gap: 24px; margin-top: 20px; font-size: 16px; white-space: nowrap; }
+.run-readout[hidden] { display: none; }
+.run-readout strong { margin-left: 4px; font-weight: normal; font-variant-numeric: tabular-nums; }
+
+#sum { color: var(--color-observation); }
+
+.sum-histogram { grid-column: 1 / -1; width: min(100%, 840px); margin: 10px auto 0; }
+.sum-histogram[hidden] { display: none; }
+.sum-histogram svg { display: block; width: 100%; height: auto; }
+.sum-histogram p { text-align: center; margin: 0; font-size: 18px; }
+
+/* El cambio de Simular a Simulando… no debe redimensionar las columnas. */
+.simulate { width: 160px; white-space: nowrap; }
+.controls legend, .controls button, .controls output, .controls .limits { font-weight: 700; }
+.launches { position: relative; height: 49px; display: flex; align-items: center; }
+.launches output { position: absolute; top: -7px; left: 0; right: 0; font-size: 18px; line-height: 20px; }
+.launches input[type="range"] { height: 16px; }
+.launches .limits { position: absolute; top: 36px; left: 0; right: 0; }
+html { scrollbar-gutter: stable; }
+@media (max-width: 600px) { .simulate { width: 100%; } }
+
+@media (max-width: 1100px) { .dice-area { margin-bottom: 44px; } }
+
+/* Reserva el espacio para que la aparición de la normal no mueva la página. */
+.sum-histogram { position: relative; padding-bottom: 64px; }
+.normal-curve { animation: reveal-normal 0.8s ease both; }
+.normal-parameters { position: absolute; bottom: 0; left: 0; width: 100%; min-height: 44px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 24px; color: var(--color-normal); font-size: 16px; animation: reveal-normal 0.6s 0.8s ease both; }
+@keyframes reveal-normal { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .normal-curve, .normal-parameters { animation: none; } }
+
+/* Reserva una columna lateral para los parámetros, incluso durante la animación. */
+.sum-histogram { width: min(100%, 1080px); padding-bottom: 0; padding-right: 240px; }
+.normal-parameters { top: 0; bottom: auto; left: auto; right: 0; width: 220px; height: calc(100% - 22px); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; flex-wrap: nowrap; gap: 10px; font-size: 18px; }
+.normal-parameters span:not(:first-child) { padding-left: 24px; }
+@media (max-width: 600px) {
+  .sum-histogram { padding-right: 140px; }
+  .normal-parameters { width: 128px; font-size: 13px; gap: 6px; }
+  .normal-parameters span:not(:first-child) { padding-left: 12px; }
+}
+
+.project-credit { grid-column: 1 / -1; margin-top: 42px; padding: 18px 12px 4px; border-top: 1px solid #292929; text-align: center; color: #a3a3a3; font-size: 12px; line-height: 1.65; text-wrap: balance; }
+.project-credit p { margin: 0; }
+.project-credit p + p { margin-top: 3px; }
+.project-credit .project-name { color: #c2c2c2; }
+
+/* Mantiene el espacio del resultado y la posición del pie antes de simular. */
+.sum-histogram[hidden] { display: block; visibility: hidden; }
+.sum-histogram::before { content: ''; display: block; width: 100%; aspect-ratio: 840 / 270; }
+.sum-histogram:not([hidden])::before { display: none; }
+.sum-histogram[hidden]::after { content: ''; display: block; height: 22px; }
+.sum-histogram > p { line-height: 22px; }
+#stage-note { min-height: 36px; line-height: 18px; }
+.project-credit { border-top-color: #555; }
+
+/* Presentación de la versión independiente, separada de los controles. */
+.resource-header { grid-column: 1 / -1; margin-bottom: 36px; padding-bottom: 26px; border-bottom: 1px solid #414141; }
+.embedded .resource-header { display: none; }
+.embedded #app { min-height: 0; padding-top: 32px; }
+.resource-identity { display: flex; justify-content: space-between; align-items: baseline; gap: 12px 24px; flex-wrap: wrap; font-size: 12px; line-height: 1.6; color: #b5b5b5; }
+.resource-identity a { color: #b5b5b5; text-decoration: underline; text-underline-offset: 4px; }
+.resource-identity a:hover { color: #fff; }
+.resource-identity a:focus-visible { outline: 2px solid #58c4dd; outline-offset: 5px; }
+.resource-header h1 { margin: 24px 0 12px; max-width: 1050px; font-size: clamp(25px, 2.5vw, 36px); line-height: 1.2; font-weight: 600; text-wrap: balance; }
+.resource-header > p { margin: 0; max-width: 850px; color: #b5b5b5; font-size: 16px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .resource-header { margin-bottom: 28px; padding-bottom: 22px; }
+  .resource-header h1 { margin-top: 20px; }
+  .resource-header > p { font-size: 14px; }
+}
