@@ -1,7 +1,11 @@
 # Prototipo: beca de colaboración
 
-Carpeta destinada a organizar los materiales del prototipo desarrollado por Iván en el marco de la beca de colaboración del proyecto AUREA.
+Materiales del prototipo desarrollado por Iván Pineda Ontañón en el marco de la beca de colaboración del proyecto AUREA.
 
-La organización de los archivos está pendiente. Los materiales existentes se mantienen en sus ubicaciones actuales; la creación de esta carpeta no los mueve ni modifica.
+- [ManimGL](ManimGL/): escenas del prototipo.
+- [Notebooks](Notebooks/): cuadernos y dependencias.
+- [src](src/): otros desarrollos y ejemplos de controles.
 
-El desarrollo del simulador de David Fernández Álvarez se encuentra en la carpeta independiente [TCL_ManimGL](../TCL_ManimGL/).
+Las tres carpetas se han trasladado juntas desde la raíz, conservando su contenido y su estructura interna.
+
+La beta posterior se encuentra en [TCL_ManimGL](../TCL_ManimGL/) y la aplicación web en [TCL_Web](../TCL_Web/).
