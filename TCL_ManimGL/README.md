@@ -8,7 +8,7 @@ Recurso para **Estadística y Optimización**, Grado en Ingeniería Civil y Terr
 
 Primera incorporación al repositorio: 9 de noviembre de 2026, a partir del paquete preparado el 6 de noviembre. Código de la beta local del simulador.
 
-Ubicación: `AUREA/TCL_ManimGL/`, al mismo nivel que la carpeta `AUREA/ManimGL/` que conserva el trabajo de Iván. No sustituir ni renombrar esa carpeta existente.
+Ubicación: `AUREA/TCL_ManimGL/`, separada de la carpeta `AUREA/Prototipo_beca_de_colaboracion/ManimGL/` que conserva el trabajo de Iván. La versión web está en [TCL_Web](../TCL_Web/).
 
 Los diez módulos Python son copias sin modificaciones de la beta local `TCL_Manim`. Su identidad queda recogida en `MANIFIESTO_SHA256.txt`. Se han comprobado su sintaxis y las importaciones internas por inspección estática; esta preparación documental no incluye una nueva prueba gráfica de ManimGL ni una instalación limpia multiplataforma.
 
